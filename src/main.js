@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import Home from './Home.vue';
 import Users from './Users.vue';
+import Venues from './Venues.vue';
 
 import VueRouter from 'vue-router';
 
@@ -26,6 +27,11 @@ const routes = [
     path: "/users",
     name: "users",
     component: Users
+  },
+  {
+    path:  "/venues",
+    name: "venues",
+    component: Venues
   }
 ];
 

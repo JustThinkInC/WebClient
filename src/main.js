@@ -3,19 +3,19 @@ import App from './App.vue';
 import Home from './Home.vue';
 import Users from './Users.vue';
 import Venues from './Venues.vue';
-
 import VueRouter from 'vue-router';
-
-Vue.use(VueRouter);
-
+import Vuetify from 'vuetify';
 import VueResource from 'vue-resource';
 
+Vue.use(VueRouter);
+Vue.use(Vuetify);
 Vue.use(VueResource);
 Vue.http.options.emulateJSON = true;
 
 const routes = [
   {
     path: "/",
+    name: "home",
     component: Home
   },
   {

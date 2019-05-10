@@ -1,37 +1,30 @@
 <template>
- <nav>
-   <div>
-    <Slide noOverlay id="burgerMenu">
-      <router-link :to="{ name: 'home'}" id="homeLink">
-        <span>Home</span>
-      </router-link>
-      <router-link :to="{ name: 'venues'}" id="venuesLink">
-        <span>Venues</span>
-      </router-link>
-      <router-link :to="{ name: 'users'}" id="usersLink">
-        <span>Users</span>
-      </router-link>
-    </Slide>
-  </div>
- </nav>
+  <v-toolbar id="NavMenu">
+    <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar-title>Swoosh</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-toolbar-items class="hidden-sm-and-down">
+      <v-btn flat>Link One</v-btn>
+      <v-btn flat>Link Two</v-btn>
+      <v-btn flat>Link Three</v-btn>
+    </v-toolbar-items>
+  </v-toolbar>
 </template>
 
+
 <script>
-  import {Slide} from 'vue-burger-menu';
   export default {
     name: "Menu",
-    components: {
-      Slide
-    },
-    methods: {
-      openNav: function() {
-      }
-    }
   }
 </script>
 
 <style scoped>
-  .bm-burger-button {
+
+  #NavMenu {
+    margin-bottom: 5%;
+  }
+
+  bm-burger-button {
     position: fixed;
     width: 36px;
     height: 30px;
@@ -39,29 +32,35 @@
     top: 36px;
     cursor: pointer;
   }
-  .bm-burger-bars {
+
+  bm-burger-bars {
     background-color: #373a47;
   }
+
   .line-style {
     position: absolute;
     height: 20%;
     left: 0;
     right: 0;
   }
+
   .cross-style {
     position: absolute;
     top: 12px;
     right: 2px;
     cursor: pointer;
   }
+
   .bm-cross {
     background: #bdc3c7;
   }
+
   .bm-cross-button {
     height: 24px;
     width: 24px;
   }
-  .bm-menu {
+
+  bm-menu {
     height: 100%; /* 100% Full-height */
     width: 0; /* 0 width - change this with JavaScript */
     position: fixed; /* Stay in place */
@@ -74,19 +73,22 @@
     transition: 0.5s; /*0.5 second transition effect to slide in the sidenav*/
   }
 
-  .bm-overlay {
+  bm-overlay {
     background: rgba(0, 0, 0, 0.3);
   }
-  .bm-item-list {
+
+  bm-item-list {
     color: #b8b7ad;
     margin-left: 10%;
     font-size: 20px;
   }
+
   .bm-item-list > * {
     display: flex;
     text-decoration: none;
     padding: 0.7em;
   }
+
   .bm-item-list > * > span {
     margin-left: 10px;
     font-weight: 700;

@@ -1,33 +1,60 @@
 <template>
   <div>
     <Menu/>
+    <v-form>
+    <v-container id="citySelect">
+      <v-layout wrap>
 
+        <v-flex xs12 md6>
+          <v-text-field
+            v-model="nameSearch"
+            label="Name"
+            v-on:input="searchVenues">
+          </v-text-field>
+        </v-flex>
 
-    <div id="search-wrapper">
-      <input type="text" v-model="search" placeholder="City"/>
-      <!--Search venues button-->
-      <button type="button" class="btn btn-primary" v-on:click="getVenues()">
-        Search
-      </button>
-    </div>
+        <v-flex xs12 md6>
+          <v-autocomplete
+            v-model="citySearch"
+            :items=cities
+            label="City"
+            attach="citySelect"
+            v-on:input="searchVenues">
+          </v-autocomplete>
+        </v-flex>
+
+      </v-layout>
+    </v-container>
+    </v-form>
 
     <div id="venues">
       <table>
         <tr>
-          <td>Venue ID</td>
-          <td>Venue Name</td>
-          <td>Venue Photo</td>
+          <td><span>Name</span></td>
+          <td><span>Category</span></td>
+          <td><span>Venue Photo</span></td>
+          <td><span>Star Rating</span></td>
+          <td><span>Cost Rating</span></td>
         </tr>
+
         <tr v-for="venue in venues">
-          <td> {{ venue.venueName }} <br></td>
-          <td> {{ getCategoryName(venue.categoryId) }} <br></td>
+          <td>
+            <router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">{{ venue.venueName }}</router-link>
+          </td>
+          <td>{{ getCategoryName(venue.categoryId) }}<br></td>
           <td>
             <img :src="getVenuePrimaryPhoto(venue.venueId,venue.primaryPhoto)" width="100px">
-            <br>
           </td>
-          <!--TODO: Add mean star rating and mode cost rating-->
           <td>
-            <router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">View</router-link>
+            <v-rating dense v-model=venue.meanStarRating color="yellow darken-3" background-color="grey darken-1"
+                      empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+
+            </v-rating>
+          </td>
+          <td>
+            <v-rating dense v-model=venue.meanStarRating color="yellow darken-3" background-color="grey darken-1"
+                      empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+            </v-rating>
           </td>
         </tr>
       </table>
@@ -37,6 +64,7 @@
 
 <script>
   import Menu from "./Menu";
+
   export default {
     data() {
       return {
@@ -44,33 +72,61 @@
         errorFlag: false,
         venues: [],
         categories: [],
-        search: ""
+        cities: [],
+        nameSearch: "",
+        citySearch: ""
       }
     },
     mounted: function () {
+      this.getVenues();
       this.getVenueCategory();
+      this.getCities();
     },
-    computed: {
-
-    },
+    computed: {},
     methods: {
       getVenues: function () {
-        this.$http.get("http://localhost:4941/api/v1/venues?city=" + this.search)
+        this.$http.get("http://localhost:4941/api/v1/venues")
           .then(function (response) {
             this.venues = response.data;
-          }, function(error) {
+          }, function (error) {
             this.error = error;
             this.errorFlag = true;
           })
       },
-      getVenueCategory: function() {
+      searchVenues: function () {
+        let baseUrl = "http://localhost:4941/api/v1/venues?";
+        if (this.citySearch !== "") baseUrl += "city=" + this.citySearch + "&";
+        if (this.nameSearch !== "") baseUrl += "q=" + this.nameSearch;
+        this.$http.get(baseUrl)
+          .then(function (response) {
+            console.log("HELLLO")
+            this.venues = response.data;
+          }, function (error) {
+            this.error = error;
+            this.errorFlag = true;
+          })
+      },
+      getVenueCategory: function () {
         this.$http.get("http://localhost:4941/api/v1/categories")
           .then(function (response) {
             this.categories = response.data;
           });
       },
-      getCategoryName: function(id) {
-        if (typeof(this.categories[id-1]) !== "undefined") {
+      getCities: function () {
+        this.$http.get("http://localhost:4941/api/v1/venues")
+          .then(function (response) {
+            let allVenues = response.data;
+            for (let i = 0; i < allVenues.length; i++) {
+              this.cities.push(allVenues[i].city);
+            }
+            this.cities.push("Auck")
+          }, function (error) {
+            this.error = error;
+            this.errorFlag = true;
+          })
+      },
+      getCategoryName: function (id) {
+        if (typeof (this.categories[id - 1]) !== "undefined") {
           return this.categories[id - 1].categoryName;
         }
       },
@@ -89,5 +145,22 @@
 </script>
 
 <style scoped>
+  table {
+    display: block;
+    margin: 10% 25%;
+    width: 50%;
+  }
 
+  td {
+    width: 25%;
+  }
+
+  #citySelect {
+    margin-left: 25%;
+    width: 50%;
+  }
+
+  #venues {
+    margin-top: 5%;
+  }
 </style>

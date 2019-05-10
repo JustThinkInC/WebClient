@@ -107,7 +107,7 @@
       deleteUser: function (user_id) {
         this.$http.delete('http://localhost:4941/api/venues/' + user_id)
           .then(function (response) {
-            for (var i = 0; i <= this.users.length; i++) {
+            for (var i = 0; i < this.users.length; i++) {
               if (user_id == this.users[i].venueId) {
                 this.users.splice(i, 1);
               }

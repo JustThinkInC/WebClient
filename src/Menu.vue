@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-toolbar id="NavMenu">
+    <v-toolbar id="NavMenu" fixed>
       <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Swoosh</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -16,7 +16,6 @@
         <v-list-tile avatar>
           <v-list-tile-avatar>
             <!--TOOD: Add user's profile photo or default pic -->
-            <!--<img src="https://randomuser.me/api/portraits/men/85.jpg">-->
             <v-icon>person</v-icon>
           </v-list-tile-avatar>
 

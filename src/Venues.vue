@@ -1,6 +1,8 @@
 <template>
   <div>
     <Menu/>
+
+    <!--Filters for venues-->
     <v-form>
       <v-container id="venueFilter">
         <v-layout wrap>
@@ -34,10 +36,24 @@
               v-on:input="searchVenues">
             </v-autocomplete>
           </v-flex>
+
+          <v-flex md md4>
+            <v-select
+              v-model="search.sortBy"
+              :items=sortOptions
+              item-text="text"
+              item-value="query"
+              label="Sort"
+              attach="venueFilter"
+              v-on:input="searchVenues">
+
+            </v-select>
+          </v-flex>
         </v-layout>
       </v-container>
     </v-form>
 
+    <!--List all venues as cards in a container-->
     <v-container fluid grid-list-xl id="venues">
       <v-layout align-center fill-height justify-space-around row>
         <v-flex xs6 v-for="(venue, index) in pagedVenues" :key="index">
@@ -90,9 +106,14 @@
       </v-layout>
     </v-container>
 
+    <!--Pagination-->
     <v-layout justify-center row>
       <div class="text-xs-center">
-        <v-pagination id="pagination" v-model="currentPage" color="blue" :length="totalRows" circle @input="onPageChanged">
+        <v-flex>
+          {{ this.pageIndex }}
+        </v-flex>
+        <v-pagination id="pagination" v-model="currentPage" color="blue" :length="totalRows" circle
+                      @input="onPageChanged">
         </v-pagination>
       </div>
     </v-layout>
@@ -117,16 +138,26 @@
           {categoryName: ""},
           {sortBy: ""}
         ],
+        sortOptions: [
+          {query: "DISTANCE&reverseSort=false", text: "Nearest"},
+          {query: "DISTANCE&reverseSort=true", text: "Furthest"},
+          {query: "STAR_RATING&reverseSort=true", text: "Rating (low to high)"},
+          {query: "STAR_RATING&reverseSort=false", text: "Rating (high to low)"},
+          {query: "COST_RATING&reverseSort=false", text: "Cost (low to high)"},
+          {query: "COST_RATING&reverseSort=true", text: "Cost (high to low)"}
+        ],
         pagedVenues: [],
         perPage: 1,
         totalRows: 1,
         currentPage: 1,
+        pageIndex: ""
       }
     },
     mounted: function () {
       this.getVenues();
       this.getCategories();
       this.getCities();
+      this.browserLocation();
     },
     computed: {},
     methods: {
@@ -143,10 +174,21 @@
       paginate: function (pageSize, pageNumber) {
         let venuesToPage = this.venues;
         this.pagedVenues = venuesToPage.slice(pageNumber * pageSize, (pageNumber + 1) * pageSize);
-        this.totalRows = this.venues.length;
+        this.totalRows = Math.ceil(this.venues.length / this.perPage);
+
+        let start = (this.currentPage - 1) * this.perPage + 1;
+        let end = Math.min(start + this.perPage - 1, this.venues.length);
+        this.pageIndex = "Venues: " + start + "-" + end;
       },
       onPageChanged: function (page) {
         this.paginate(this.perPage, page - 1)
+      },
+      browserLocation: function () {
+        let self = this;
+        navigator.geolocation.getCurrentPosition(position => {
+          self.lat = position.coords.latitude;
+          self.long = position.coords.longitude;
+        });
       },
       constructSearch: function () {
         let url = "http://localhost:4941/api/v1/venues?";
@@ -157,13 +199,19 @@
           url += "categoryId=" + this.categories.indexOf(this.search.categoryName) + "&";
         }
         if (this.search.sortBy !== undefined && this.search.sortBy !== "") {
-          url += "sortBy=" + this.search.sortBy + "&";
+          if (this.search.sortBy.includes("DISTANCE") && this.lat && this.long) {
+            return url + "sortBy=" + this.search.sortBy + "&myLatitude=" + this.lat +
+              "&myLongitude=" + this.long;
+          } else if (!this.search.sortBy.includes("DISTANCE")) {
+            url += "sortBy=" + this.search.sortBy + "&";
+          }
         }
 
         return url;
       },
       searchVenues: function () {
         const searchUrl = this.constructSearch();
+        console.log("s " + searchUrl);
         this.$http.get(searchUrl)
           .then(function (response) {
             this.venues = response.data;

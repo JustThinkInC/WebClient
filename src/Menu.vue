@@ -1,20 +1,66 @@
 <template>
-  <v-toolbar id="NavMenu">
-    <v-toolbar-side-icon></v-toolbar-side-icon>
-    <v-toolbar-title>Swoosh</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn flat>Link One</v-btn>
-      <v-btn flat>Link Two</v-btn>
-      <v-btn flat>Link Three</v-btn>
-    </v-toolbar-items>
-  </v-toolbar>
+  <v-layout>
+    <v-toolbar id="NavMenu">
+      <v-toolbar-side-icon @click="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>Swoosh</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat>Link One</v-btn>
+        <v-btn flat>Link Two</v-btn>
+        <v-btn flat>Link Three</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+
+    <v-navigation-drawer v-model="drawer" absolute temporary>
+      <v-list class="pa-1">
+        <v-list-tile avatar>
+          <v-list-tile-avatar>
+            <!--TOOD: Add user's profile photo or default pic -->
+            <!--<img src="https://randomuser.me/api/portraits/men/85.jpg">-->
+            <v-icon>person</v-icon>
+          </v-list-tile-avatar>
+
+          <v-list-tile-content>
+            <v-list-tile-title>
+              <!--TODO: Add user's name here or sign in-->
+              Sign In
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+
+      <v-list class="pt-0" dense>
+        <v-divider></v-divider>
+
+        <v-list-tile v-for="item in items" :key="item.title" @click="" :to="item.route">
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
+      </v-list>
+    </v-navigation-drawer>
+  </v-layout>
 </template>
 
 
 <script>
   export default {
     name: "Menu",
+    data() {
+      return {
+        drawer: null,
+        items: [
+          { title: 'Home', icon: 'home', route: '/' },
+          { title: 'Venues', icon: 'place', route: 'venues'},
+          { title: 'logout', icon: 'exit_to_app', route: '/'} //TODO: Add log out function call here
+        ]
+      }
+    }
   }
 </script>
 
@@ -24,75 +70,5 @@
     margin-bottom: 5%;
   }
 
-  bm-burger-button {
-    position: fixed;
-    width: 36px;
-    height: 30px;
-    left: 36px;
-    top: 36px;
-    cursor: pointer;
-  }
-
-  bm-burger-bars {
-    background-color: #373a47;
-  }
-
-  .line-style {
-    position: absolute;
-    height: 20%;
-    left: 0;
-    right: 0;
-  }
-
-  .cross-style {
-    position: absolute;
-    top: 12px;
-    right: 2px;
-    cursor: pointer;
-  }
-
-  .bm-cross {
-    background: #bdc3c7;
-  }
-
-  .bm-cross-button {
-    height: 24px;
-    width: 24px;
-  }
-
-  bm-menu {
-    height: 100%; /* 100% Full-height */
-    width: 0; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Stay on top */
-    top: 0;
-    left: 0;
-    background-color: rgb(63, 63, 65); /* Black*/
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
-    transition: 0.5s; /*0.5 second transition effect to slide in the sidenav*/
-  }
-
-  bm-overlay {
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  bm-item-list {
-    color: #b8b7ad;
-    margin-left: 10%;
-    font-size: 20px;
-  }
-
-  .bm-item-list > * {
-    display: flex;
-    text-decoration: none;
-    padding: 0.7em;
-  }
-
-  .bm-item-list > * > span {
-    margin-left: 10px;
-    font-weight: 700;
-    color: white;
-  }
 
 </style>

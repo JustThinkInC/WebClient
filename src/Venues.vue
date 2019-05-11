@@ -2,63 +2,101 @@
   <div>
     <Menu/>
     <v-form>
-    <v-container id="citySelect">
-      <v-layout wrap>
+      <v-container id="venueFilter">
+        <v-layout wrap>
 
-        <v-flex xs12 md6>
-          <v-text-field
-            v-model="nameSearch"
-            label="Name"
-            v-on:input="searchVenues">
-          </v-text-field>
-        </v-flex>
+          <!--Name search by phrase/letters-->
+          <v-flex md md4>
+            <v-text-field
+              v-model="search.name"
+              label="Name"
+              v-on:input="searchVenues">
+            </v-text-field>
+          </v-flex>
 
-        <v-flex xs12 md6>
-          <v-autocomplete
-            v-model="citySearch"
-            :items=cities
-            label="City"
-            attach="citySelect"
-            v-on:input="searchVenues">
-          </v-autocomplete>
-        </v-flex>
+          <!--Category search/selection-->
+          <v-flex md md4>
+            <v-autocomplete
+              v-model="search.categoryName"
+              :items=categories
+              label="Category"
+              attach="venueFilter"
+              v-on:input="searchVenues">
+            </v-autocomplete>
+          </v-flex>
 
-      </v-layout>
-    </v-container>
+          <v-flex md md4>
+            <v-autocomplete
+              v-model="search.city"
+              :items=cities
+              label="City"
+              attach="venueFilter"
+              v-on:input="searchVenues">
+            </v-autocomplete>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-form>
 
-    <div id="venues">
-      <table>
-        <tr>
-          <td><span>Name</span></td>
-          <td><span>Category</span></td>
-          <td><span>Venue Photo</span></td>
-          <td><span>Star Rating</span></td>
-          <td><span>Cost Rating</span></td>
-        </tr>
+    <v-container fluid grid-list-xl id="venues">
+      <v-layout align-center fill-height justify-space-around row>
+        <v-flex xs6 v-for="(venue, index) in pagedVenues" :key="index">
 
-        <tr v-for="venue in venues">
-          <td>
-            <router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">{{ venue.venueName }}</router-link>
-          </td>
-          <td>{{ getCategoryName(venue.categoryId) }}<br></td>
-          <td>
-            <img :src="getVenuePrimaryPhoto(venue.venueId,venue.primaryPhoto)" width="100px">
-          </td>
-          <td>
-            <v-rating dense v-model=venue.meanStarRating color="yellow darken-3" background-color="grey darken-1"
-                      empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+          <v-card hover>
+            <v-img :src="getVenuePrimaryPhoto(venue.venueId, venue.primaryPhoto)" contain height="150px"></v-img>
+            <!--Venue Name with link-->
+            <v-card-title primary-title>
+              <div class="column">
+                <div class="headline">
+                  <router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">
+                    {{ venue.venueName }}
+                  </router-link>
+                </div>
+                <div class="subheading">
+                  {{ getVenueCategoryName(venue.categoryId) }}
+                </div>
+              </div>
+            </v-card-title>
 
-            </v-rating>
-          </td>
-          <td>
-            <v-rating dense v-model=venue.meanStarRating color="yellow darken-3" background-color="grey darken-1"
-                      empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
-            </v-rating>
-          </td>
-        </tr>
-      </table>
-    </div>
+            <!--Show venue star and cost ratings-->
+            <v-card-title>
+              <div class="column">
+                <span class="grey--text">Avg. Rating:
+                  <v-rating dense small v-model=venue.meanStarRating color="yellow darken-3"
+                            background-color="grey darken-1"
+                            empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+                  </v-rating>
+                </span>
+              </div>
+
+              <v-spacer></v-spacer>
+
+              <div class="column">
+                <span class="grey--text">Cost Rating:
+                  <v-rating dense small v-model=venue.modeCostRating color="yellow darken-3"
+                            background-color="grey darken-1"
+                            empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+                  </v-rating>
+                </span>
+              </div>
+            </v-card-title>
+
+            <v-card-text>
+              {{ venue.shortDescription }}
+            </v-card-text>
+          </v-card>
+
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <v-layout justify-center row>
+      <div class="text-xs-center">
+        <v-pagination id="pagination" v-model="currentPage" color="blue" :length="totalRows" circle @input="onPageChanged">
+        </v-pagination>
+      </div>
+    </v-layout>
+
   </div>
 </template>
 
@@ -71,15 +109,23 @@
         error: "",
         errorFlag: false,
         venues: [],
-        categories: [],
-        cities: [],
-        nameSearch: "",
-        citySearch: ""
+        categories: ["All"],
+        cities: ["All"],
+        search: [
+          {name: ""},
+          {city: ""},
+          {categoryName: ""},
+          {sortBy: ""}
+        ],
+        pagedVenues: [],
+        perPage: 1,
+        totalRows: 1,
+        currentPage: 1,
       }
     },
     mounted: function () {
       this.getVenues();
-      this.getVenueCategory();
+      this.getCategories();
       this.getCities();
     },
     computed: {},
@@ -88,28 +134,51 @@
         this.$http.get("http://localhost:4941/api/v1/venues")
           .then(function (response) {
             this.venues = response.data;
+            this.paginate(this.perPage, 0);
           }, function (error) {
             this.error = error;
             this.errorFlag = true;
           })
+      },
+      paginate: function (pageSize, pageNumber) {
+        let venuesToPage = this.venues;
+        this.pagedVenues = venuesToPage.slice(pageNumber * pageSize, (pageNumber + 1) * pageSize);
+        this.totalRows = this.venues.length;
+      },
+      onPageChanged: function (page) {
+        this.paginate(this.perPage, page - 1)
+      },
+      constructSearch: function () {
+        let url = "http://localhost:4941/api/v1/venues?";
+        const all = "All";
+        if (this.search.city !== undefined && this.search.city !== all) url += "city=" + this.search.city + "&";
+        if (this.search.name !== undefined && this.search.name !== "") url += "q=" + this.search.name + "&";
+        if (this.search.categoryName !== undefined && this.search.categoryName !== all) {
+          url += "categoryId=" + this.categories.indexOf(this.search.categoryName) + "&";
+        }
+        if (this.search.sortBy !== undefined && this.search.sortBy !== "") {
+          url += "sortBy=" + this.search.sortBy + "&";
+        }
+
+        return url;
       },
       searchVenues: function () {
-        let baseUrl = "http://localhost:4941/api/v1/venues?";
-        if (this.citySearch !== "") baseUrl += "city=" + this.citySearch + "&";
-        if (this.nameSearch !== "") baseUrl += "q=" + this.nameSearch;
-        this.$http.get(baseUrl)
+        const searchUrl = this.constructSearch();
+        this.$http.get(searchUrl)
           .then(function (response) {
-            console.log("HELLLO")
             this.venues = response.data;
+            this.paginate(this.perPage, 0);
           }, function (error) {
             this.error = error;
             this.errorFlag = true;
-          })
+          });
       },
-      getVenueCategory: function () {
+      getCategories: function () {
         this.$http.get("http://localhost:4941/api/v1/categories")
           .then(function (response) {
-            this.categories = response.data;
+            for (let i = 0; i < response.data.length; i++) {
+              this.categories.push(response.data[i].categoryName);
+            }
           });
       },
       getCities: function () {
@@ -125,9 +194,9 @@
             this.errorFlag = true;
           })
       },
-      getCategoryName: function (id) {
-        if (typeof (this.categories[id - 1]) !== "undefined") {
-          return this.categories[id - 1].categoryName;
+      getVenueCategoryName: function (id) {
+        if (typeof (this.categories[id]) !== "undefined") {
+          return this.categories[id];
         }
       },
       getVenuePrimaryPhoto: function (id, filename) {
@@ -145,22 +214,16 @@
 </script>
 
 <style scoped>
-  table {
-    display: block;
-    margin: 10% 25%;
-    width: 50%;
-  }
-
-  td {
-    width: 25%;
-  }
-
-  #citySelect {
-    margin-left: 25%;
-    width: 50%;
+  #venueFilter {
+    margin-top: 7%;
+    margin-left: 30%;
+    width: 40%;
   }
 
   #venues {
-    margin-top: 5%;
+    margin-top: 2%;
+    margin-bottom: 1%;
+    width: 60%;
   }
+
 </style>

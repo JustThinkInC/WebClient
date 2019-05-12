@@ -46,9 +46,29 @@
               label="Sort"
               attach="venueFilter"
               v-on:input="searchVenues">
-
             </v-select>
           </v-flex>
+
+          <v-flex md md4>
+            <v-label>Min Rating</v-label>
+            <v-rating small hover v-model=search.minStarRating color="yellow darken-3" clearable
+                      background-color="grey darken-1" empty-icon="$vuetify.icons.ratingFull" length="5"
+                      v-on:input="searchVenues">
+            </v-rating>
+          </v-flex>
+
+          <v-flex md md4>
+          <v-select
+            v-model="search.maxCostRating"
+            :items=maxCostOptions
+            item-text="text"
+            item-value="query"
+            label="Max Cost"
+            attach="venueFilter"
+            v-on:input="searchVenues">
+          </v-select>
+          </v-flex>
+
         </v-layout>
       </v-container>
     </v-form>
@@ -136,7 +156,9 @@
           {name: ""},
           {city: ""},
           {categoryName: ""},
-          {sortBy: ""}
+          {sortBy: ""},
+          {minStarRating: ""},
+          {maxCostRating: ""}
         ],
         sortOptions: [
           {query: "DISTANCE&reverseSort=false", text: "Nearest"},
@@ -145,6 +167,13 @@
           {query: "STAR_RATING&reverseSort=false", text: "Rating (high to low)"},
           {query: "COST_RATING&reverseSort=false", text: "Cost (low to high)"},
           {query: "COST_RATING&reverseSort=true", text: "Cost (high to low)"}
+        ],
+        maxCostOptions: [
+          {query: "maxCostRating=0", text: "Free"},
+          {query: "maxCostRating=1", text: "$"},
+          {query: "maxCostRating=2", text: "$$"},
+          {query: "maxCostRating=3", text: "$$$"},
+          {query: "maxCostRating=4", text: "$$$$"},
         ],
         pagedVenues: [],
         perPage: 1,
@@ -178,7 +207,7 @@
 
         let start = (this.currentPage - 1) * this.perPage + 1;
         let end = Math.min(start + this.perPage - 1, this.venues.length);
-        this.pageIndex = "Venues: " + start + "-" + end;
+        this.pageIndex = "Venues: " + start + "-" + end + " of " + this.venues.length;
       },
       onPageChanged: function (page) {
         this.paginate(this.perPage, page - 1)
@@ -199,19 +228,25 @@
           url += "categoryId=" + this.categories.indexOf(this.search.categoryName) + "&";
         }
         if (this.search.sortBy !== undefined && this.search.sortBy !== "") {
-          if (this.search.sortBy.includes("DISTANCE") && this.lat && this.long) {
+          if (this.search.sortBy.includes("DISTANCE") && this.lat !== undefined && this.long !== undefined) {
             return url + "sortBy=" + this.search.sortBy + "&myLatitude=" + this.lat +
               "&myLongitude=" + this.long;
           } else if (!this.search.sortBy.includes("DISTANCE")) {
             url += "sortBy=" + this.search.sortBy + "&";
           }
         }
+        if (typeof (this.search.minStarRating) === "number" && this.search.minStarRating >= 1) {
+          url += "minStarRating=" + this.search.minStarRating + "&";
+        }
+        if (this.search.maxCostRating !== "undefined") {
+          url += this.search.maxCostRating + "&";
+        }
+
 
         return url;
       },
       searchVenues: function () {
         const searchUrl = this.constructSearch();
-        console.log("s " + searchUrl);
         this.$http.get(searchUrl)
           .then(function (response) {
             this.venues = response.data;

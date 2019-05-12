@@ -201,10 +201,58 @@
 
                 <v-card>
                   <v-card-text class="grey lighten-3">
-                    {{ selectedVenue.longDescription}}
+                    <p>
+                      {{selectedVenue.shortDescription}}
+                      {{ selectedVenue.longDescription}}
+                    </p>
                   </v-card-text>
                 </v-card>
 
+              </v-expansion-panel-content>
+              <!--Reviews panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <i>Reviews</i>
+                  </div>
+                </template>
+                <!--Show 'No Reviews Yet' if there are none-->
+                <v-card>
+                  <v-card-text v-if="selectedVenueReviews[0] === undefined">
+                    No Reviews yet
+                  </v-card-text>
+                </v-card>
+                <!--Show reviews-->
+                <v-card v-for="review in selectedVenueReviews">
+                  <v-card-text class="grey lighten-5">
+                    <div class="font-weight-bold">
+                      {{ review.reviewAuthor.username}}
+                    </div>
+
+                    <!--Ratings & Time of review-->
+                    <v-layout align-start justify-start>
+                      <v-flex md md4>
+                        <div class="column">
+                          <v-rating dense small :value="review.starRating" color="yellow darken-3" readonly
+                                    half-increments>
+                          </v-rating>
+                          <p class="grey--text">
+                            {{ review.timePosted.split("T")[0].replace(/-/g, "/")}}
+                          </p>
+                        </div>
+                      </v-flex>
+                      <v-flex md md4>
+                        <div class="column">
+                          <v-rating dense small :value="review.costRating" color="red darken-3" readonly half-increments
+                                    empty-icon="$" full-icon="$">
+                          </v-rating>
+                        </div>
+                      </v-flex>
+                    </v-layout>
+                    <br>
+                    <p>{{ review.reviewBody }}</p>
+                  </v-card-text>
+                </v-card>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-layout>
@@ -238,6 +286,7 @@
         errorFlag: false,
         venues: [],
         selectedVenue: "",
+        selectedVenueReviews: null,
         showVenue: false,
         categories: ["All"],
         cities: ["All"],
@@ -382,13 +431,17 @@
         return "http://localhost:4941/api/v1/venues/" + id + "/photos/" + filename
       },
       getVenue: function (venueId) {
-        console.log("YAY");
         this.$http.get("http://localhost:4941/api/v1/venues/" + venueId)
           .then(function (response) {
-              this.selectedVenue = response.data;
-              console.log(" SEL " + this.selectedVenue)
-            }
-          )
+            this.selectedVenue = response.data;
+            this.getVenueReviews(venueId);
+          });
+      },
+      getVenueReviews: function (venueId) {
+        this.$http.get("http://localhost:4941/api/v1/venues/" + venueId + "/reviews")
+          .then(function (response) {
+            this.selectedVenueReviews = response.data;
+          });
       }
     },
     components: {

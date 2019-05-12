@@ -58,15 +58,15 @@
           </v-flex>
 
           <v-flex md md4>
-          <v-select
-            v-model="search.maxCostRating"
-            :items=maxCostOptions
-            item-text="text"
-            item-value="query"
-            label="Max Cost"
-            attach="venueFilter"
-            v-on:input="searchVenues">
-          </v-select>
+            <v-select
+              v-model="search.maxCostRating"
+              :items=maxCostOptions
+              item-text="text"
+              item-value="query"
+              label="Max Cost"
+              attach="venueFilter"
+              v-on:input="searchVenues">
+            </v-select>
           </v-flex>
 
         </v-layout>
@@ -83,11 +83,12 @@
             <!--Venue Name with link-->
             <v-card-title primary-title>
               <div class="column">
-                <div class="headline">
-                  <router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">
+                  <div class="headline" v-on:click="showVenue=!showVenue; getVenue(venue.venueId)">
+                    <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
                     {{ venue.venueName }}
-                  </router-link>
-                </div>
+                    <!--</router-link>-->
+                  </div>
+
                 <div class="subheading">
                   {{ getVenueCategoryName(venue.categoryId) }}
                 </div>
@@ -126,6 +127,61 @@
       </v-layout>
     </v-container>
 
+    <v-layout fluid align-center fill-height justify-space-around row>
+      <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
+        <v-card hover>
+          <!--TODO Add all Venues images, imphasises primary...maybe use carousel-->
+          <!--<v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px"></v-img>-->
+
+          <!--Venue Name with link-->
+          <v-card-title primary-title>
+            <div class="column">
+              <div class="headline">
+                {{ selectedVenue.venueName }}
+              </div>
+
+              <div class="subheading">
+                {{ selectedVenue.category.categoryName }}
+              </div>
+
+              <!--TODO: Add an information menu here, maybe use an accordion menu component-->
+              <v-list-tile-sub-title>
+                Registered: {{ selectedVenue.dateAdded.split("T")[0].replace(/-/g, "/")}}
+              </v-list-tile-sub-title>
+
+            </div>
+          </v-card-title>
+
+          <!--Show venue star and cost ratings-->
+          <v-card-title>
+            <div class="column">
+                <span class="grey--text">Avg. Rating:
+                  <v-rating dense small v-model=selectedVenue.meanStarRating color="yellow darken-3"
+                            background-color="grey darken-1"
+                            empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+                  </v-rating>
+                </span>
+            </div>
+
+            <!--<v-spacer></v-spacer>-->
+
+            <div class="column">
+                <span class="grey--text">Cost Rating:
+                  <v-rating dense small v-model=selectedVenue.modeCostRating color="yellow darken-3"
+                            background-color="grey darken-1" full-icon="$"
+                            empty-icon="$" half-increments readonly length="5">
+                  </v-rating>
+                </span>
+            </div>
+          </v-card-title>
+
+          <v-card-text>
+            {{ selectedVenue.shortDescription }}
+          </v-card-text>
+        </v-card>
+
+      </v-dialog>
+    </v-layout>
     <!--Pagination-->
     <v-layout justify-center row>
       <div class="text-xs-center">
@@ -150,6 +206,8 @@
         error: "",
         errorFlag: false,
         venues: [],
+        selectedVenue: "",
+        showVenue: false,
         categories: ["All"],
         cities: ["All"],
         search: [
@@ -187,6 +245,7 @@
       this.getCategories();
       this.getCities();
       this.browserLocation();
+      this.getVenue(1);
     },
     computed: {},
     methods: {
@@ -287,10 +346,19 @@
           return 'src/assets/logo.png'
         }
         return "http://localhost:4941/api/v1/venues/" + id + "/photos/" + filename
+      },
+      getVenue: function (venueId) {
+        console.log("YAY");
+        this.$http.get("http://localhost:4941/api/v1/venues/" + venueId)
+          .then(function (response) {
+              this.selectedVenue = response.data;
+              console.log(" SEL " + this.selectedVenue)
+            }
+          )
       }
     },
     components: {
-      Menu
+      Menu,
     }
 
   }

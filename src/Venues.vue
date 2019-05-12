@@ -22,7 +22,7 @@
               v-model="search.categoryName"
               :items=categories
               label="Category"
-              attach="venueFilter"
+              attach=""
               v-on:input="searchVenues">
             </v-autocomplete>
           </v-flex>
@@ -32,7 +32,7 @@
               v-model="search.city"
               :items=cities
               label="City"
-              attach="venueFilter"
+              attach=""
               v-on:input="searchVenues">
             </v-autocomplete>
           </v-flex>
@@ -44,7 +44,7 @@
               item-text="text"
               item-value="query"
               label="Sort"
-              attach="venueFilter"
+              attach=""
               v-on:input="searchVenues">
             </v-select>
           </v-flex>
@@ -64,7 +64,7 @@
               item-text="text"
               item-value="query"
               label="Max Cost"
-              attach="venueFilter"
+              attach=""
               v-on:input="searchVenues">
             </v-select>
           </v-flex>
@@ -83,11 +83,11 @@
             <!--Venue Name with link-->
             <v-card-title primary-title>
               <div class="column">
-                  <div class="headline" v-on:click="showVenue=!showVenue; getVenue(venue.venueId)">
-                    <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
-                    {{ venue.venueName }}
-                    <!--</router-link>-->
-                  </div>
+                <div class="headline" v-on:click="showVenue=!showVenue; getVenue(venue.venueId)">
+                  <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
+                  {{ venue.venueName }}
+                  <!--</router-link>-->
+                </div>
 
                 <div class="subheading">
                   {{ getVenueCategoryName(venue.categoryId) }}
@@ -129,8 +129,8 @@
 
     <v-layout fluid align-center fill-height justify-space-around row>
       <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
-        <v-card hover>
-          <!--TODO Add all Venues images, imphasises primary...maybe use carousel-->
+        <v-card flat v-if="selectedVenue">
+          <!--TODO Add all Venues images, emphasises primary...maybe use carousel-->
           <!--<v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px"></v-img>-->
 
           <!--Venue Name with link-->
@@ -145,15 +145,25 @@
               </div>
 
               <!--TODO: Add an information menu here, maybe use an accordion menu component-->
-              <v-list-tile-sub-title>
-                Registered: {{ selectedVenue.dateAdded.split("T")[0].replace(/-/g, "/")}}
-              </v-list-tile-sub-title>
+              <v-list-tile-content>
+                <p>
+                  <br>
+                  <i>Registered: </i> {{ selectedVenue.dateAdded.split("T")[0].replace(/-/g, "/")}}
+                  <br>
+                  <i>City: </i> {{ selectedVenue.city }}
+                  <br>
+                  <i>Address: </i> {{ selectedVenue.address}}
+                  <br>
+                  <i>Administrator: </i> {{ selectedVenue.admin.username}}
+                </p>
+              </v-list-tile-content>
 
             </div>
           </v-card-title>
 
           <!--Show venue star and cost ratings-->
           <v-card-title>
+
             <div class="column">
                 <span class="grey--text">Avg. Rating:
                   <v-rating dense small v-model=selectedVenue.meanStarRating color="yellow darken-3"
@@ -162,9 +172,7 @@
                   </v-rating>
                 </span>
             </div>
-
             <!--<v-spacer></v-spacer>-->
-
             <div class="column">
                 <span class="grey--text">Cost Rating:
                   <v-rating dense small v-model=selectedVenue.modeCostRating color="yellow darken-3"
@@ -175,9 +183,32 @@
             </div>
           </v-card-title>
 
-          <v-card-text>
-            {{ selectedVenue.shortDescription }}
-          </v-card-text>
+          <v-layout>
+            <v-expansion-panel>
+              <!--Description panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <!--<span>-->
+                    <i>Description:</i>
+                    <!--</span>-->
+                    <v-spacer></v-spacer>
+                    <!--<span class="font-italic"> -->
+                    {{ selectedVenue.shortDescription }}
+                    <!--</span>-->
+                  </div>
+                </template>
+
+                <v-card>
+                  <v-card-text class="grey lighten-3">
+                    {{ selectedVenue.longDescription}}
+                  </v-card-text>
+                </v-card>
+
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-layout>
+
         </v-card>
 
       </v-dialog>
@@ -233,6 +264,10 @@
           {query: "maxCostRating=3", text: "$$$"},
           {query: "maxCostRating=4", text: "$$$$"},
         ],
+        showVenueItems: [
+          {info: false},
+          {reviews: false}
+        ],
         pagedVenues: [],
         perPage: 1,
         totalRows: 1,
@@ -245,7 +280,6 @@
       this.getCategories();
       this.getCities();
       this.browserLocation();
-      this.getVenue(1);
     },
     computed: {},
     methods: {

@@ -2,15 +2,16 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import 'vuetify/dist/vuetify.css';
+import VueRouter from 'vue-router';
+import VueResource from 'vue-resource';
 import App from './App.vue';
 import Home from './Home.vue';
 import Users from './Users.vue';
 import Venues from './Venues.vue';
-import VueRouter from 'vue-router';
-import VueResource from 'vue-resource';
-import Menu from './Menu';
+import Login from './Login.vue';
+import SignUp from './SignUp.vue';
 
-Vue.use(Vuetify);
+Vue.use(Vuetify,{iconfont: 'md'});
 Vue.use(VueRouter);
 Vue.use(VueResource);
 Vue.http.options.emulateJSON = true;
@@ -37,9 +38,14 @@ const routes = [
     component: Venues
   },
   {
-    path: "/menu",
-    name: "menu",
-    component: Menu
+    path: "/login",
+    name: "login",
+    component: Login
+  },
+  {
+    path: "/signup",
+    name: "SignUp",
+    component: SignUp
   }
 ];
 

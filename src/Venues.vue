@@ -262,7 +262,7 @@
     </v-layout>
 
     <!--Pagination-->
-    <v-layout justify-center row>
+    <v-layout justify-center row class="text-xs-center">
       <div class="text-xs-center">
         <v-flex>
           {{ this.pageIndex }}

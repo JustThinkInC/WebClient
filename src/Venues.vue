@@ -99,9 +99,8 @@
             <v-card-title>
               <div class="column">
                 <span class="grey--text">Avg. Rating:
-                  <v-rating dense small v-model=venue.meanStarRating color="yellow darken-3"
-                            background-color="grey darken-1"
-                            empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+                  <v-rating dense small v-model=venue.meanStarRating color="yellow darken-3" half-increments readonly
+                            background-color="grey darken-1" empty-icon="$vuetify.icons.ratingFull" length="5">
                   </v-rating>
                 </span>
               </div>
@@ -110,9 +109,8 @@
 
               <div class="column">
                 <span class="grey--text">Cost Rating:
-                  <v-rating dense small v-model=venue.modeCostRating color="yellow darken-3"
-                            background-color="grey darken-1"
-                            empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
+                  <v-rating dense small v-model=venue.modeCostRating color="red darken-3" full-icon="$" empty-icon="$"
+                            background-color="grey darken-1" half-increments readonly length="5">
                   </v-rating>
                 </span>
               </div>
@@ -127,11 +125,12 @@
       </v-layout>
     </v-container>
 
+    <!--Detailed venue information-->
     <v-layout fluid align-center fill-height justify-space-around row>
       <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
         <v-card flat v-if="selectedVenue">
           <!--TODO Add all Venues images, emphasises primary...maybe use carousel-->
-          <!--<v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px"></v-img>-->
+          <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px"></v-img>
 
           <!--Venue Name with link-->
           <v-card-title primary-title>
@@ -175,7 +174,7 @@
             <!--<v-spacer></v-spacer>-->
             <div class="column">
                 <span class="grey--text">Cost Rating:
-                  <v-rating dense small v-model=selectedVenue.modeCostRating color="yellow darken-3"
+                  <v-rating dense small v-model=selectedVenue.modeCostRating color="red darken-3"
                             background-color="grey darken-1" full-icon="$"
                             empty-icon="$" half-increments readonly length="5">
                   </v-rating>
@@ -218,7 +217,7 @@
                 </template>
                 <!--Show 'No Reviews Yet' if there are none-->
                 <v-card>
-                  <v-card-text v-if="selectedVenueReviews[0] === undefined">
+                  <v-card-text v-if="selectedVenueReviews !== null && selectedVenueReviews[0] === undefined">
                     No Reviews yet
                   </v-card-text>
                 </v-card>
@@ -261,6 +260,7 @@
 
       </v-dialog>
     </v-layout>
+
     <!--Pagination-->
     <v-layout justify-center row>
       <div class="text-xs-center">
@@ -434,6 +434,12 @@
         this.$http.get("http://localhost:4941/api/v1/venues/" + venueId)
           .then(function (response) {
             this.selectedVenue = response.data;
+            // Workaround for API not returning these nicely for specific venue
+            const venue = this.venues.find(venue => venue.venueId === venueId);
+            this.selectedVenue.venueId = venueId;
+            this.selectedVenue.meanStarRating = venue.meanStarRating;
+            this.selectedVenue.modeCostRating = venue.modeCostRating;
+            this.selectedVenue.primaryPhoto = venue.primaryPhoto;
             this.getVenueReviews(venueId);
           });
       },

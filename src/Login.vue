@@ -74,6 +74,7 @@
           }).then(function (response) {
           this.$cookie.set("authToken", response.data.token);
           setUser(response.data.userId);
+          this.$router.push("/venues");
         }, (function (error) {
           this.error = error;
           this.errorFlag = true;

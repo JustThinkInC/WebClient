@@ -111,6 +111,7 @@
       //
       },
       submitSignUp: function () {
+        // TODO: Check user name unique, check email unique
         // this.checkEmail().then(() => {
           this.$http.post("http://localhost:4941/api/v1/users",
             JSON.stringify({
@@ -125,6 +126,7 @@
               }
             }).then(function (response) {
             console.log(response);
+            this.$router.push("/venues");
           }, (function (error) {
             this.error = error.statusText.split(":")[1];
             this.errorFlag = true;

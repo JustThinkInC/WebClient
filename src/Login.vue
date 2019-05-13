@@ -52,6 +52,14 @@
       }
     },
     methods: {
+      setUser: function(userId) {
+        this.$http.get("http://localhost:4941/api/v1/users/"+userId)
+          .then(function(response) {
+            let userData = response.data;
+            userData['userId'] = userId;
+            this.$cookie.set("currentUser", userData);
+          });
+      },
       submitLogin: function () {
         console.log(this.login, this.pass);
         this.$http.post("http://localhost:4941/api/v1/users/login",
@@ -65,6 +73,7 @@
             }
           }).then(function (response) {
           this.$cookie.set("authToken", response.data.token);
+          setUser(response.data.userId);
         }, (function (error) {
           this.error = error;
           this.errorFlag = true;

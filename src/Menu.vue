@@ -56,11 +56,17 @@
     data() {
       return {
         drawer: false,
+        currentUser: null,
         items: [
           {title: 'Home', icon: 'home', route: '/'},
           {title: 'Venues', icon: 'place', route: 'venues'},
           {title: 'logout', icon: 'exit_to_app', route: '/'} //TODO: Add log out function call here
         ]
+      }
+    },
+    computed: {
+      getCurrentUser: function() {
+        this.currentUser = this.$cookie.get("currentUser");
       }
     }
   }

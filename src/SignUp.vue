@@ -38,7 +38,7 @@
                   <v-spacer></v-spacer>
 
                   <v-flex>
-                    <v-text-field outline v-model="email" name="email" :rules="[rules.required, rules.email]"
+                    <v-text-field outline v-model="email" name="email" :rules="[rules.required, rules.emailRule]"
                                   label="Email" id="email" type="email">
                     </v-text-field>
                   </v-flex>
@@ -87,7 +87,7 @@
         error: "",
         errorFlag: false,
         valid: true,
-        giveName: "",
+        givenName: "",
         lastName: "",
         password: "",
         passConfirm: "",
@@ -95,8 +95,8 @@
         username: "",
         rules: {
           required: value => !!value || 'Required.',
-          email: value => value.match(/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
-            || 'Invalid Email Address',
+          emailRule: value => (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
+              .test(value) || 'Invalid Email Address',
           max: value => value.length <= 64 || 'Max 64 characters',
           min: value => value.length >= 6 || 'Min 6 characters',
           passwordMatch: () => this.password === this.passConfirm || ('The password you entered doesn\'t match')
@@ -126,7 +126,7 @@
             }).then(function (response) {
             console.log(response);
           }, (function (error) {
-            this.error = error;
+            this.error = error.statusText.split(":")[1];
             this.errorFlag = true;
           }));
         // });

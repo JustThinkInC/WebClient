@@ -38,13 +38,37 @@
         <v-list class="pt-0" dense>
           <v-divider></v-divider>
 
-          <v-list-tile v-for="item in items" :key="item.title" :to="item.route">
+          <!--<v-list-tile v-for="item in items" :key="item.title" :to="item.route">-->
+          <!--Home option-->
+          <v-list-tile :to="'/'">
             <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
+              <v-icon>home</v-icon>
             </v-list-tile-action>
 
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title>Home</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <!--Venues option-->
+          <v-list-tile :to="'/venues'">
+            <v-list-tile-action>
+              <v-icon>place</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>Venues</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <!--Logout option, only if user logged in-->
+          <v-list-tile v-if="currentUser" v-on:click="logout">
+            <v-list-tile-action>
+              <v-icon>exit_to_app</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>Log out</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
 
@@ -61,12 +85,7 @@
     data() {
       return {
         drawer: false,
-        currentUser: [],
-        items: [
-          {title: 'Home', icon: 'home', route: '/'},
-          {title: 'Venues', icon: 'place', route: 'venues'},
-          this.currentUser ? {title: 'logout', icon: 'exit_to_app', route: '/'} : {}//TODO: Add log out function call here
-        ]
+        currentUser: null,
       }
     },
     mounted: function () {
@@ -75,7 +94,11 @@
     methods: {
       getCurrentUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
-        console.log(this.currentUser);
+      },
+      logout: function () {
+        this.$cookie.delete("currentUser");
+        this.$cookie.delete("authToken");
+        location.reload();  // Refresh page
       }
     }
   }

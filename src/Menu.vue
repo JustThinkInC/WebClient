@@ -13,7 +13,7 @@
       </v-toolbar>
 
       <v-navigation-drawer v-model="drawer" absolute temporary>
-        <v-list class="pa-1">
+        <v-list>
           <v-list-tile avatar>
             <v-list-tile-avatar>
               <v-icon v-if="currentUser">
@@ -35,7 +35,7 @@
           </v-list-tile>
         </v-list>
 
-        <v-list class="pt-0" dense>
+        <v-list>
           <v-divider></v-divider>
 
           <!--<v-list-tile v-for="item in items" :key="item.title" :to="item.route">-->
@@ -94,6 +94,18 @@
     methods: {
       getCurrentUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
+        if (this.currentUser && this.currentUser.profilePhoto === null) {
+          console.log("GETTING PHOTO");
+          this.getUserPhoto();
+        }
+      },
+      getUserPhoto: function () {
+        this.$http.get("http://localhost:4941/api/v1/users/"+this.currentUser.userId+"/photo")
+          .then(function (response) {
+            this.currentUser.profilePhoto = response.data;
+          }, function (error) {
+            this.currentUser.profilePhoto = null;
+          });
       },
       logout: function () {
         this.$cookie.delete("currentUser");

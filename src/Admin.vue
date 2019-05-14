@@ -53,6 +53,81 @@
               {{ venue.shortDescription }}
             </v-card-text>
 
+            <!--<v-layout>-->
+              <v-expansion-panel>
+                <!--Description panel-->
+                <v-expansion-panel-content>
+                  <template v-slot:header>
+                    <div>
+                      <!--<span>-->
+                      <i>Description:</i>
+                      <!--</span>-->
+                      <v-spacer></v-spacer>
+                      <!--<span class="font-italic"> -->
+                      {{ venue.shortDescription }}
+                      <!--</span>-->
+                    </div>
+                  </template>
+
+                  <v-card>
+                    <v-card-text class="grey lighten-3">
+                      <p>
+                        {{venue.shortDescription}}
+                        {{ venue.longDescription}}
+                      </p>
+                    </v-card-text>
+                  </v-card>
+
+                </v-expansion-panel-content>
+                <!--Reviews panel-->
+                <v-expansion-panel-content>
+                  <template v-slot:header>
+                    <div>
+                      <i>Reviews</i>
+                    </div>
+                  </template>
+                  <!--Show 'No Reviews Yet' if there are none-->
+                  <v-card>
+                    <!--<v-card-text v-if="selectedVenueReviews !== null && selectedVenueReviews[0] === undefined">-->
+                      <!--No Reviews yet-->
+                    <!--</v-card-text>-->
+                  </v-card>
+                  <!--Show reviews-->
+                  <v-card>
+                    <v-card-text class="grey lighten-5">
+                      <div class="font-weight-bold">
+                        <!--{{ review.reviewAuthor.username}}-->
+                      </div>
+
+                      <!--Ratings & Time of review-->
+                      <v-layout align-start justify-start>
+                        <v-flex md md4>
+                          <div class="column">
+                            <v-rating dense small :value="venue.meanStarRating" color="yellow darken-3" readonly
+                                      half-increments>
+                            </v-rating>
+                            <p class="grey--text">
+                              <!--{{ review.timePosted.split("T")[0].replace(/-/g, "/")}}-->
+                            </p>
+                          </div>
+                        </v-flex>
+                        <v-flex md md4>
+                          <div class="column">
+                            <v-rating dense small :value="venue.modeCostRating" color="red darken-3" readonly
+                                      half-increments
+                                      empty-icon="$" full-icon="$">
+                            </v-rating>
+                          </div>
+                        </v-flex>
+                      </v-layout>
+                      <br>
+                      <!--<p>{{ review.reviewBody }}</p>-->
+                    </v-card-text>
+                  </v-card>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            <!--</v-layout>-->
+
           </v-card>
         </v-flex>
 
@@ -207,7 +282,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" :disabled="!valid" v-on:click="createVenue">Create</v-btn>
+            <v-btn color="primary" v-on:click="editVenue">Edit</v-btn>
           </v-card-actions>
 
         </v-card>
@@ -269,8 +344,7 @@
       this.getUser();
       this.getVenues();
       this.getCategories();
-    }
-    ,
+    },
     methods: {
       getUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
@@ -340,28 +414,41 @@
           this.errorFlag = true;
         });
       },
+      checkForm: function () {
+        if (this.venue.name || this.venue.category || this.venue.city || this.venue.shortDescription
+          || this.venue.longDescription || this.venue.address || this.venue.latitude || this.venue.longitude) {
+          return true;
+        } else {
+          this.valid = false;
+          return false;
+        }
+      },
       editVenue: function () {
-        this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
-          JSON.stringify({
-            "venueName": this.venue.name,
-            "categoryId": this.categories.indexOf(this.venue.category),
-            "city": this.venue.city,
-            "address": this.venue.address,
-            "shortDescription": this.venue.shortDescription,
-            "longDescription": this.venue.longDescription,
-            "latitude": this.venue.latitude,
-            "longitude": this.venue.longitude
-          }), {
-            headers: {
-              "Content-type": "application/json",
-              "X-Authorization": this.$cookie.get("authToken")
-            }
-          }).then(function (response) {
-          this.edit = !this.edit;
-        }, function (error) {
-          this.error = error;
-          this.errorFlag = true;
-        });
+        if (this.checkForm()) {
+          //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
+          //     JSON.stringify({
+          //       "venueName": this.venue.name,
+          //       "categoryId": this.categories.indexOf(this.venue.category),
+          //       "city": this.venue.city,
+          //       "address": this.venue.address,
+          //       "shortDescription": this.venue.shortDescription,
+          //       "longDescription": this.venue.longDescription,
+          //       "latitude": this.venue.latitude,
+          //       "longitude": this.venue.longitude
+          //     }), {
+          //       headers: {
+          //         "Content-type": "application/json",
+          //         "X-Authorization": this.$cookie.get("authToken")
+          //       }
+          //     }).then(function (response) {
+          //     this.edit = !this.edit;
+          //   }, function (error) {
+          //     this.error = error;
+          //     this.errorFlag = true;
+          //   });
+        } else {
+          console.log("INVALID")
+        }
       }
     },
     components: {

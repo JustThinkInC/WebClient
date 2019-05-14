@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import VueCookie from 'vue-cookie';
 import 'vuetify/dist/vuetify.min.css';
 import 'vuetify/dist/vuetify.css';
 import VueRouter from 'vue-router';
@@ -10,10 +11,12 @@ import Users from './Users.vue';
 import Venues from './Venues.vue';
 import Login from './Login.vue';
 import SignUp from './SignUp.vue';
+import Profile from './Profile.vue';
 
 Vue.use(Vuetify,{iconfont: 'md'});
 Vue.use(VueRouter);
 Vue.use(VueResource);
+Vue.use(VueCookie);
 Vue.http.options.emulateJSON = true;
 
 const routes = [
@@ -46,6 +49,11 @@ const routes = [
     path: "/signup",
     name: "SignUp",
     component: SignUp
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: Profile
   }
 ];
 

@@ -12,6 +12,7 @@ import Venues from './Venues.vue';
 import Login from './Login.vue';
 import SignUp from './SignUp.vue';
 import Profile from './Profile.vue';
+import Admin from './Admin.vue';
 
 Vue.use(Vuetify,{iconfont: 'md'});
 Vue.use(VueRouter);
@@ -54,6 +55,11 @@ const routes = [
     path: "/profile",
     name: "profile",
     component: Profile
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: Admin
   }
 ];
 

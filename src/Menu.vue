@@ -127,9 +127,17 @@
           });
       },
       logout: function () {
-        this.$cookie.delete("currentUser");
-        this.$cookie.delete("authToken");
-        location.reload();  // Refresh page
+        this.$http.post("http://localhost:4941/api/v1/users/logout", {},
+          {
+            headers: {
+              "X-Authorization": this.$cookie.get("authToken"),
+            }
+          }).then(function (response) {
+            console.log(response)
+            this.$cookie.delete("currentUser");
+            this.$cookie.delete("authToken");
+            location.reload();  // Refresh page
+        });
       }
     }
   }

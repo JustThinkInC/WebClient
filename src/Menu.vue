@@ -16,14 +16,19 @@
         <v-list class="pa-1">
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <!--TOOD: Add user's profile photo or default pic -->
-              <v-icon>person</v-icon>
+              <v-icon v-if="currentUser">
+                {{ this.currentUser.profilePhoto}}
+              </v-icon>
+              <v-icon v-else>person</v-icon>
             </v-list-tile-avatar>
 
             <v-list-tile-content>
               <v-list-tile-title>
-                <!--TODO: Add user's name here or sign in-->
-                <router-link :to="{name: 'login'}">Sign In</router-link>
+                <!--Show username if user logged in, else show sign in-->
+                <div v-if="currentUser">
+                  <router-link :to="{name: 'profile'}">{{ this.currentUser.username }}</router-link>
+                </div>
+                <router-link v-else :to="{name: 'login'}">Sign In</router-link>
 
               </v-list-tile-title>
             </v-list-tile-content>
@@ -60,7 +65,7 @@
         items: [
           {title: 'Home', icon: 'home', route: '/'},
           {title: 'Venues', icon: 'place', route: 'venues'},
-          {title: 'logout', icon: 'exit_to_app', route: '/'} //TODO: Add log out function call here
+          this.currentUser ? {title: 'logout', icon: 'exit_to_app', route: '/'} : {}//TODO: Add log out function call here
         ]
       }
     },

@@ -74,9 +74,9 @@
     </v-form>
 
     <!--List all venues as cards in a container-->
-    <v-container fluid grid-list-xl id="venues">
-      <v-layout align-center fill-height justify-space-around row>
-        <v-flex xs6 v-for="(venue, index) in pagedVenues" :key="index">
+    <v-container fluid grid-list-lg id="venues">
+      <v-layout align-center fill-height justify-space-around row wrap>
+        <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
 
           <v-card hover>
             <v-img :src="getVenuePrimaryPhoto(venue.venueId, venue.primaryPhoto)" contain height="150px"></v-img>

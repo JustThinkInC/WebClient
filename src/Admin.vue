@@ -3,9 +3,9 @@
     <Menu/>
 
 
-    <v-container fluid grid-list-x1 id="venues">
-      <v-layout align-center fill-height justify-space-around row>
-        <v-flex xs6 v-for="(venue, index) in pagedVenues" :key="index">
+    <v-container fluid grid-list-lg id="venues">
+      <v-layout align-center fill-height justify-space-around row wrap>
+        <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
           <v-card hover>
 
             <v-card-actions>
@@ -88,8 +88,6 @@
                 </v-text-field>
               </v-flex>
 
-              <v-spacer></v-spacer>
-
               <v-flex>
                 <!--<v-text-field outline v-model="category" name="category" :rules="[rules.required]" label="Category"-->
                 <!--id="category" type="text"></v-text-field>-->
@@ -103,14 +101,22 @@
                 </v-autocomplete>
               </v-flex>
 
+              <!--City-->
+              <v-flex>
+                <v-text-field v-model="venue.city" name="city" :rules="[rules.required]" label="City" type="text">
+                </v-text-field>
+              </v-flex>
+
+              <v-flex>
+                <v-text-field v-model="venue.address" name="address" :rules="[rules.required]" label="Address" type="text">
+                </v-text-field>
+              </v-flex>
               <!--Short & Long description-->
               <v-flex>
                 <v-text-field  v-model="venue.shortDescription" name="shortDescription"
                               :rules="[rules.required]"
                               label="Short Description" id="shortDescription" type="text"></v-text-field>
               </v-flex>
-
-              <v-spacer></v-spacer>
 
               <v-flex>
                 <v-text-field v-model="venue.longDescription" name="longDescription" :rules="[rules.required]"
@@ -124,8 +130,6 @@
                               label="Latitude" id="latitude" type="number">
                 </v-text-field>
               </v-flex>
-
-              <v-spacer></v-spacer>
 
               <v-flex>
                 <v-text-field v-model="venue.longitude" name="longitude" :rules="[rules.required]"
@@ -331,14 +335,16 @@
             "address": this.venue.address,
             "shortDescription": this.venue.shortDescription,
             "longDescription": this.venue.longDescription,
-            "latitude": this.venue.latitude,
-            "longitude": this.venue.longitude
+            "latitude": parseFloat(this.venue.latitude),
+            "longitude": parseFloat(this.venue.longitude)
           }), {
             headers: {
               "Content-type": "application/json",
+              "X-Authorization": this.$cookie.get("authToken")
             }
           }).then(function (response) {
-          this.edit = !this.edit;
+          this.create = !this.create;
+          this.getVenues();
         }, function (error) {
           this.error = error;
           this.errorFlag = true;

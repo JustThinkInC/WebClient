@@ -16,9 +16,8 @@
         <v-list>
           <v-list-tile avatar>
             <v-list-tile-avatar>
-              <v-icon v-if="currentUser">
-                {{ this.currentUser.profilePhoto}}
-              </v-icon>
+              <v-img v-if="currentUser !== null" :src="getUserPhoto">
+              </v-img>
               <v-icon v-else>person</v-icon>
             </v-list-tile-avatar>
 
@@ -91,20 +90,29 @@
     mounted: function () {
       this.getCurrentUser();
     },
+    computed: {
+      getUserPhoto: function () {
+        if (this.currentUser.profilePhoto) {
+          return this.currentUser.profilePhoto;
+        } else {
+          return 'src/assets/logo.png';
+        }
+      },
+    },
     methods: {
       getCurrentUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
         if (this.currentUser && this.currentUser.profilePhoto === null) {
-          console.log("GETTING PHOTO");
-          this.getUserPhoto();
+          this.setUserPhoto();
         }
       },
-      getUserPhoto: function () {
-        this.$http.get("http://localhost:4941/api/v1/users/"+this.currentUser.userId+"/photo")
+      setUserPhoto: function () {
+        const defaultPath = "src/assets/logo.png";
+        this.$http.get("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo")
           .then(function (response) {
             this.currentUser.profilePhoto = response.data;
           }, function (error) {
-            this.currentUser.profilePhoto = null;
+            this.currentUser.profilePhoto = defaultPath;
           });
       },
       logout: function () {

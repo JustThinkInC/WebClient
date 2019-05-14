@@ -320,7 +320,7 @@
           {reviews: false}
         ],
         pagedVenues: [],
-        perPage: 1,
+        perPage: 10,
         totalRows: 1,
         currentPage: 1,
         pageIndex: ""
@@ -332,7 +332,6 @@
       this.getCities();
       this.browserLocation();
     },
-    computed: {},
     methods: {
       getVenues: function () {
         this.$http.get("http://localhost:4941/api/v1/venues")

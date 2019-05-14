@@ -108,12 +108,13 @@
               </v-flex>
 
               <v-flex>
-                <v-text-field v-model="venue.address" name="address" :rules="[rules.required]" label="Address" type="text">
+                <v-text-field v-model="venue.address" name="address" :rules="[rules.required]" label="Address"
+                              type="text">
                 </v-text-field>
               </v-flex>
               <!--Short & Long description-->
               <v-flex>
-                <v-text-field  v-model="venue.shortDescription" name="shortDescription"
+                <v-text-field v-model="venue.shortDescription" name="shortDescription"
                               :rules="[rules.required]"
                               label="Short Description" id="shortDescription" type="text"></v-text-field>
               </v-flex>
@@ -164,7 +165,7 @@
             <v-form v-model="valid">
               <!--Name & Category-->
               <v-flex>
-                <v-text-field v-model="venue.name" name="name" :rules="[rules.required]" label="Name"
+                <v-text-field v-model="venue.name" name="name" label="Name"
                               type="text">
                 </v-text-field>
               </v-flex>
@@ -172,44 +173,33 @@
               <v-spacer></v-spacer>
 
               <v-flex>
-                <!--<v-text-field outline v-model="category" name="category" :rules="[rules.required]" label="Category"-->
-                <!--id="category" type="text"></v-text-field>-->
-                <v-autocomplete
-                  v-model="venue.category"
-                  :items=categories
-                  label="Category"
-                  attach=""
-                  :rules="[rules.required]">
-                </v-autocomplete>
+                <v-autocomplete v-model="venue.category" :items=categories label="Category" attach=""></v-autocomplete>
               </v-flex>
 
               <!--Short & Long description-->
               <v-flex>
-                <v-text-field v-model="venue.shortDescription" name="shortDescription"
-                              :rules="[rules.required]"
-                              label="Short Description" id="shortDescription" type="text"></v-text-field>
+                <v-text-field v-model="venue.shortDescription" name="shortDescription" label="Short Description"
+                              id="shortDescription" type="text"></v-text-field>
               </v-flex>
 
               <v-spacer></v-spacer>
 
               <v-flex>
-                <v-textarea v-model="venue.longDescription" name="longDescription" :rules="[rules.required]" rows="1"
-                            label="Long Description" id="longDescription" type="text">
+                <v-textarea v-model="venue.longDescription" name="longDescription" rows="1" label="Long Description"
+                            id="longDescription" type="text">
                 </v-textarea>
               </v-flex>
 
               <!--Latitude & Longitude-->
               <v-flex>
-                <v-text-field v-model="venue.latitude" name="latitude" :rules="[rules.required]"
-                              label="Latitude" id="latitude" type="number">
+                <v-text-field v-model="venue.latitude" name="latitude" label="Latitude" id="latitude" type="number">
                 </v-text-field>
               </v-flex>
 
               <v-spacer></v-spacer>
 
               <v-flex>
-                <v-text-field v-model="venue.longitude" name="longitude" :rules="[rules.required]"
-                              label="Longitude" id="longitude" type="number">
+                <v-text-field v-model="venue.longitude" name="longitude" label="Longitude" id="longitude" type="number">
                 </v-text-field>
               </v-flex>
             </v-form>
@@ -351,7 +341,7 @@
         });
       },
       editVenue: function () {
-        this.$http.patch("http://localhost:4941/api/v1/venues",
+        this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
           JSON.stringify({
             "venueName": this.venue.name,
             "categoryId": this.categories.indexOf(this.venue.category),

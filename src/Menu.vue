@@ -61,7 +61,7 @@
     data() {
       return {
         drawer: false,
-        currentUser: null,
+        currentUser: [],
         items: [
           {title: 'Home', icon: 'home', route: '/'},
           {title: 'Venues', icon: 'place', route: 'venues'},
@@ -69,9 +69,13 @@
         ]
       }
     },
-    computed: {
-      getCurrentUser: function() {
-        this.currentUser = this.$cookie.get("currentUser");
+    mounted: function () {
+      this.getCurrentUser();
+    },
+    methods: {
+      getCurrentUser: function () {
+        this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
+        console.log(this.currentUser);
       }
     }
   }

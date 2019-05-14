@@ -57,24 +57,25 @@
           .then(function(response) {
             let userData = response.data;
             userData['userId'] = userId;
-            this.$cookie.set("currentUser", userData);
+            this.$cookie.set("currentUser", JSON.stringify(userData));
+            console.log(this.$cookie.get("currentUser"));
+            this.$router.push("/venues");
           });
       },
       submitLogin: function () {
-        console.log(this.login, this.pass);
         this.$http.post("http://localhost:4941/api/v1/users/login",
           JSON.stringify({
             "username": this.login,
-            "email": "",
+            "email": this.login,
             "password": this.pass
           }), {
             headers: {
               "Content-type": "application/json",
             }
           }).then(function (response) {
-          this.$cookie.set("authToken", response.data.token);
-          setUser(response.data.userId);
-          this.$router.push("/venues");
+            const data = response.data;
+          this.$cookie.set("authToken", data.token);
+          this.setUser(response.data.userId);
         }, (function (error) {
           this.error = error;
           this.errorFlag = true;

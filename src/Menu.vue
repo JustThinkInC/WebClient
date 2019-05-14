@@ -60,6 +60,17 @@
             </v-list-tile-content>
           </v-list-tile>
 
+          <!--Admin option, only if user logged in-->
+          <v-list-tile v-if="currentUser" :to="'/admin'">
+            <v-list-tile-action>
+              <v-icon>add_location</v-icon>
+            </v-list-tile-action>
+
+            <v-list-tile-content>
+              <v-list-tile-title>Admin</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
           <!--Logout option, only if user logged in-->
           <v-list-tile v-if="currentUser" v-on:click="logout">
             <v-list-tile-action>

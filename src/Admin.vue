@@ -364,6 +364,7 @@
           }), {
             headers: {
               "Content-type": "application/json",
+              "X-Authorization": this.$cookie.get("authToken")
             }
           }).then(function (response) {
           this.edit = !this.edit;

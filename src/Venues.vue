@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-app>
     <Menu/>
 
     <!--Filters for venues-->
@@ -130,7 +130,8 @@
       <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
         <v-card flat v-if="selectedVenue">
           <!--TODO Add all Venues images, emphasises primary...maybe use carousel-->
-          <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px"></v-img>
+          <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain
+                 height="150px"></v-img>
 
           <!--Venue Name with link-->
           <v-card-title primary-title>
@@ -242,7 +243,8 @@
                       </v-flex>
                       <v-flex md md4>
                         <div class="column">
-                          <v-rating dense small :value="review.costRating" color="red darken-3" readonly half-increments
+                          <v-rating dense small :value="review.costRating" color="red darken-3" readonly
+                                    half-increments
                                     empty-icon="$" full-icon="$">
                           </v-rating>
                         </div>
@@ -272,8 +274,8 @@
         </v-pagination>
       </div>
     </v-layout>
+  </v-app>
 
-  </div>
 </template>
 
 <script>

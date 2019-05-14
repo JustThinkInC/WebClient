@@ -26,8 +26,16 @@
                   <v-spacer></v-spacer>
 
                   <v-flex>
-                    <v-text-field outline v-model="category" name="category" :rules="[rules.required]" label="Category"
-                                  id="category" type="text"></v-text-field>
+                    <!--<v-text-field outline v-model="category" name="category" :rules="[rules.required]" label="Category"-->
+                                  <!--id="category" type="text"></v-text-field>-->
+                    <v-autocomplete
+                    v-model="category"
+                    :items=categories
+                    label="Category"
+                    attach=""
+                    outline
+                    :rules="[rules.required]">
+                    </v-autocomplete>
                   </v-flex>
 
                   <!--Short & Long description-->
@@ -84,6 +92,7 @@
       return {
         error: "",
         errorFlag: false,
+        categories: [],
         valid: true,
         name: "",
         category: "",
@@ -96,6 +105,19 @@
         rules: {
           required: value => !!value || 'Required.'
         }
+      }
+    },
+    mounted: function () {
+      this.getCategories();
+    },
+    computed: {
+      getCategories: function() {
+        this.$http.get("http://localhost:4941/api/v1/categories")
+          .then(function (response) {
+            for (let i = 0; i < response.data.length; i++) {
+              this.categories.push(response.data[i].categoryName);
+            }
+          });
       }
     },
     components: {

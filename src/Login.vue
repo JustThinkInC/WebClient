@@ -58,7 +58,6 @@
             let userData = response.data;
             userData['userId'] = userId;
             this.$cookie.set("currentUser", JSON.stringify(userData));
-            console.log(this.$cookie.get("currentUser"));
             this.$router.push("/venues");
           });
       },

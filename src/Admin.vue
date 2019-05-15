@@ -4,6 +4,19 @@
 
     <!--View-->
     <v-container fluid grid-list-lg id="venues">
+
+      <!--Add venue button-->
+      <v-layout align-end justify-end>
+        <v-tooltip bottom nudge-right>
+          <template v-slot:activator="{ on }">
+          <v-btn fab color="success" v-on:click="create = !create" v-on="on">
+            <v-icon>add</v-icon>
+          </v-btn>
+          </template>
+          <span>Add a venue</span>
+        </v-tooltip>
+      </v-layout>
+
       <v-layout align-center fill-height justify-space-around row wrap>
         <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
           <v-card hover>
@@ -121,12 +134,6 @@
 
           </v-card>
         </v-flex>
-
-        <!--<v-flex fill-height>-->
-        <v-btn fab color="success" v-on:click="create = !create">
-          <v-icon>add</v-icon>
-        </v-btn>
-        <!--</v-flex>-->
 
       </v-layout>
     </v-container>
@@ -452,7 +459,7 @@
   }
 
   #venues {
-    margin-top: 10%;
+    margin-top: 5%;
     margin-bottom: 1%;
     width: 60%;
   }

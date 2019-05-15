@@ -35,8 +35,8 @@
               <v-list-tile-action></v-list-tile-action>
 
               <v-list-tile-content>
-                <v-list-tile-title>{{currentUser.username}}</v-list-tile-title>
                 <v-list-tile-sub-title>Username</v-list-tile-sub-title>
+                <v-list-tile-title>{{currentUser.username}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -46,8 +46,8 @@
               <v-list-tile-action></v-list-tile-action>
 
               <v-list-tile-content>
-                <v-list-tile-title>{{currentUser.givenName}}</v-list-tile-title>
                 <v-list-tile-sub-title>Given name</v-list-tile-sub-title>
+                <v-list-tile-title>{{currentUser.givenName}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -57,8 +57,8 @@
               <v-list-tile-action></v-list-tile-action>
 
               <v-list-tile-content>
-                <v-list-tile-title>{{currentUser.familyName}}</v-list-tile-title>
                 <v-list-tile-sub-title>Last name</v-list-tile-sub-title>
+                <v-list-tile-title>{{currentUser.familyName}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -69,10 +69,10 @@
               <v-list-tile-action></v-list-tile-action>
 
               <v-list-tile-content>
-                <v-list-tile-title>{{currentUser.email}}</v-list-tile-title>
                 <v-list-tile-sub-title>Email
                   <v-icon small color="indigo">mail</v-icon>
                 </v-list-tile-sub-title>
+                <v-list-tile-title>{{currentUser.email}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 

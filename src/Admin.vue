@@ -2,7 +2,7 @@
   <v-app>
     <Menu/>
 
-
+    <!--View-->
     <v-container fluid grid-list-lg id="venues">
       <v-layout align-center fill-height justify-space-around row wrap>
         <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
@@ -53,84 +53,74 @@
               {{ venue.shortDescription }}
             </v-card-text>
 
-            <!--<v-layout>-->
-              <v-expansion-panel>
-                <!--Description panel-->
-                <v-expansion-panel-content>
-                  <template v-slot:header>
-                    <div>
-                      <!--<span>-->
-                      <i>Description:</i>
-                      <!--</span>-->
-                      <v-spacer></v-spacer>
-                      <!--<span class="font-italic"> -->
-                      {{ venue.shortDescription }}
-                      <!--</span>-->
-                    </div>
-                  </template>
+            <!--Detail panels-->
+            <v-expansion-panel>
+              <!--Description panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <!--<span>-->
+                    <i>Description:</i>
+                    <!--</span>-->
+                    <v-spacer></v-spacer>
+                    <!--<span class="font-italic"> -->
+                    {{ venue.shortDescription }}
+                    <!--</span>-->
+                  </div>
+                </template>
 
-                  <v-card>
-                    <v-card-text class="grey lighten-3">
-                      <p>
-                        {{venue.shortDescription}}
-                        {{ venue.longDescription}}
+                <v-card>
+                  <v-card-text class="grey lighten-3">
+                    <p>
+                      {{venue.shortDescription}}
+                      {{ venue.longDescription}}
+                    </p>
+                  </v-card-text>
+                </v-card>
+              </v-expansion-panel-content>
+
+              <!--Reviews panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <i>Reviews</i>
+                  </div>
+                </template>
+                <!--Show 'No Reviews Yet' if there are none-->
+                <v-card>
+                  <v-card-text v-if="venue.reviews === undefined || venue.reviews === null">
+                    No Reviews yet
+                  </v-card-text>
+                </v-card>
+                <!--Show reviews-->
+                <v-card v-for="review in venue.reviews">
+                  <v-card-text class="grey lighten-5">
+                    <div class="font-weight-bold">
+                      {{ review.reviewAuthor.username}}
+                      <p class="grey--text">
+                        {{ review.timePosted.split("T")[0].replace(/-/g, "/")}}
                       </p>
-                    </v-card-text>
-                  </v-card>
-
-                </v-expansion-panel-content>
-                <!--Reviews panel-->
-                <v-expansion-panel-content>
-                  <template v-slot:header>
-                    <div>
-                      <i>Reviews</i>
                     </div>
-                  </template>
-                  <!--Show 'No Reviews Yet' if there are none-->
-                  <v-card>
-                    <!--<v-card-text v-if="selectedVenueReviews !== null && selectedVenueReviews[0] === undefined">-->
-                      <!--No Reviews yet-->
-                    <!--</v-card-text>-->
-                  </v-card>
-                  <!--Show reviews-->
-                  <v-card>
-                    <v-card-text class="grey lighten-5">
-                      <div class="font-weight-bold">
-                        <!--{{ review.reviewAuthor.username}}-->
-                      </div>
 
-                      <!--Ratings & Time of review-->
-                      <v-layout align-start justify-start>
-                        <v-flex md md4>
-                          <div class="column">
-                            <v-rating dense small :value="venue.meanStarRating" color="yellow darken-3" readonly
-                                      half-increments>
-                            </v-rating>
-                            <p class="grey--text">
-                              <!--{{ review.timePosted.split("T")[0].replace(/-/g, "/")}}-->
-                            </p>
-                          </div>
-                        </v-flex>
-                        <v-flex md md4>
-                          <div class="column">
-                            <v-rating dense small :value="venue.modeCostRating" color="red darken-3" readonly
-                                      half-increments
-                                      empty-icon="$" full-icon="$">
-                            </v-rating>
-                          </div>
-                        </v-flex>
-                      </v-layout>
-                      <br>
-                      <!--<p>{{ review.reviewBody }}</p>-->
-                    </v-card-text>
-                  </v-card>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            <!--</v-layout>-->
+                    <!--Ratings & Time of review-->
+                    <v-layout align-start justify-start>
+                      <v-rating dense small :value="venue.meanStarRating" color="yellow darken-3" readonly
+                                half-increments>
+                      </v-rating>
+                      <v-rating dense small :value="venue.modeCostRating" color="red darken-3" readonly
+                                half-increments
+                                empty-icon="$" full-icon="$">
+                      </v-rating>
+                    </v-layout>
+                    <br>
+                    <p>{{ review.reviewBody }}</p>
+                  </v-card-text>
+                </v-card>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
 
           </v-card>
         </v-flex>
-
 
         <!--<v-flex fill-height>-->
         <v-btn fab color="success" v-on:click="create = !create">
@@ -139,10 +129,9 @@
         <!--</v-flex>-->
 
       </v-layout>
-
     </v-container>
 
-
+    <!--Create-->
     <v-layout fluid align-center justify-center id="container">
       <v-dialog v-model="create" width="50%">
         <v-card>
@@ -162,10 +151,7 @@
                               type="text">
                 </v-text-field>
               </v-flex>
-
               <v-flex>
-                <!--<v-text-field outline v-model="category" name="category" :rules="[rules.required]" label="Category"-->
-                <!--id="category" type="text"></v-text-field>-->
                 <v-autocomplete
                   v-model="venue.category"
                   :items=categories
@@ -176,24 +162,23 @@
                 </v-autocomplete>
               </v-flex>
 
-              <!--City-->
+              <!--City & Address-->
               <v-flex>
                 <v-text-field v-model="venue.city" name="city" :rules="[rules.required]" label="City" type="text">
                 </v-text-field>
               </v-flex>
-
               <v-flex>
                 <v-text-field v-model="venue.address" name="address" :rules="[rules.required]" label="Address"
                               type="text">
                 </v-text-field>
               </v-flex>
+
               <!--Short & Long description-->
               <v-flex>
                 <v-text-field v-model="venue.shortDescription" name="shortDescription"
                               :rules="[rules.required]"
                               label="Short Description" id="shortDescription" type="text"></v-text-field>
               </v-flex>
-
               <v-flex>
                 <v-text-field v-model="venue.longDescription" name="longDescription" :rules="[rules.required]"
                               label="Long Description" id="longDescription" type="text">
@@ -206,7 +191,6 @@
                               label="Latitude" id="latitude" type="number">
                 </v-text-field>
               </v-flex>
-
               <v-flex>
                 <v-text-field v-model="venue.longitude" name="longitude" :rules="[rules.required]"
                               label="Longitude" id="longitude" type="number">
@@ -216,6 +200,7 @@
 
           </v-card-text>
           <v-card-actions>
+            <v-btn color="primary" :disabled="!valid" v-on:click="create = !create">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" :disabled="!valid" v-on:click="createVenue">Create</v-btn>
           </v-card-actions>
@@ -224,7 +209,7 @@
       </v-dialog>
     </v-layout>
 
-
+    <!--Edit-->
     <v-layout fluid align-center fill-height justify-space-around row>
       <v-dialog v-model="edit" width="50%">
         <v-card>
@@ -244,9 +229,6 @@
                               type="text">
                 </v-text-field>
               </v-flex>
-
-              <v-spacer></v-spacer>
-
               <v-flex>
                 <v-autocomplete v-model="venue.category" :items=categories label="Category" attach=""></v-autocomplete>
               </v-flex>
@@ -256,9 +238,6 @@
                 <v-text-field v-model="venue.shortDescription" name="shortDescription" label="Short Description"
                               id="shortDescription" type="text"></v-text-field>
               </v-flex>
-
-              <v-spacer></v-spacer>
-
               <v-flex>
                 <v-textarea v-model="venue.longDescription" name="longDescription" rows="1" label="Long Description"
                             id="longDescription" type="text">
@@ -270,9 +249,6 @@
                 <v-text-field v-model="venue.latitude" name="latitude" label="Latitude" id="latitude" type="number">
                 </v-text-field>
               </v-flex>
-
-              <v-spacer></v-spacer>
-
               <v-flex>
                 <v-text-field v-model="venue.longitude" name="longitude" label="Longitude" id="longitude" type="number">
                 </v-text-field>
@@ -280,7 +256,10 @@
             </v-form>
 
           </v-card-text>
+
+          <!--Cancel & Edit buttons-->
           <v-card-actions>
+            <v-btn color="primary" :disabled="!valid" v-on:click="edit = !edit">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" v-on:click="editVenue">Edit</v-btn>
           </v-card-actions>
@@ -353,6 +332,7 @@
         this.$http.get("http://localhost:4941/api/v1/venues?adminId=" + this.currentUser.userId)
           .then(function (response) {
             this.venues = response.data;
+            this.getVenueReviews();
             this.paginate(this.perPage, 0);
           }, function (error) {
             this.error = error;
@@ -377,6 +357,14 @@
           return 'src/assets/logo.png'
         }
         return "http://localhost:4941/api/v1/venues/" + id + "/photos/" + filename
+      },
+      getVenueReviews: function () {
+        for (let i = 0; i < this.venues.length; i++) {
+          this.$http.get("http://localhost:4941/api/v1/venues/" + this.venues[i].venueId + "/reviews")
+            .then(function (response) {
+              this.venues[i]["reviews"] = response.data;
+            });
+        }
       },
       paginate: function (pageSize, pageNumber) {
         let venuesToPage = this.venues;

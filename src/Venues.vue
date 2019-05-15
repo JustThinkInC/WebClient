@@ -216,6 +216,54 @@
                     <i>Reviews</i>
                   </div>
                 </template>
+
+                <!--Add a review-->
+                <v-card>
+                  <v-card-text>
+                    <v-flex md4>
+                      <v-dialog width="20%">
+                        <template v-slot:activator="{ on }">
+                          <a v-on="on">Add your review</a>
+                        </template>
+                        <v-card>
+                          <v-card-title class="headline">
+                            Review {{ selectedVenue.venueName }}
+                          </v-card-title>
+
+                          <v-card-text>
+                            <!--Ratings-->
+                            <div class="text-xs-center mt5">
+                              <v-rating v-model="userReview.starRating" hover color="yellow darken-3"></v-rating>
+                              <v-select
+                                dense
+                                :items=maxCostOptions
+                                item-text="text"
+                                item-value="raw"
+                                label="Max Cost"
+                                attach=""
+                                v-on:input="userReview.costRating">
+                              </v-select>
+                            </div>
+
+                            <!--Review body-->
+                            <v-textarea dense v-model="userReview.body" outline single-line>
+                            </v-textarea>
+                          </v-card-text>
+                          <v-divider></v-divider>
+                          <!--Post & Cancel buttons-->
+                          <v-card-actions class="justify-space-between">
+                            <v-btn flat>Cancel</v-btn>
+                            <v-btn color="primary" flat>
+                              Rate Now
+                            </v-btn>
+                          </v-card-actions>
+
+                        </v-card>
+                      </v-dialog>
+                    </v-flex>
+                  </v-card-text>
+                </v-card>
+
                 <!--Show 'No Reviews Yet' if there are none-->
                 <v-card>
                   <v-card-text v-if="selectedVenueReviews !== null && selectedVenueReviews[0] === undefined">
@@ -309,15 +357,20 @@
           {query: "COST_RATING&reverseSort=true", text: "Cost (high to low)"}
         ],
         maxCostOptions: [
-          {query: "maxCostRating=0", text: "Free"},
-          {query: "maxCostRating=1", text: "$"},
-          {query: "maxCostRating=2", text: "$$"},
-          {query: "maxCostRating=3", text: "$$$"},
-          {query: "maxCostRating=4", text: "$$$$"},
+          {query: "maxCostRating=0", text: "Free", raw: 0},
+          {query: "maxCostRating=1", text: "$", raw: 1},
+          {query: "maxCostRating=2", text: "$$", raw: 2},
+          {query: "maxCostRating=3", text: "$$$", raw: 3},
+          {query: "maxCostRating=4", text: "$$$$", raw: 4},
         ],
         showVenueItems: [
           {info: false},
           {reviews: false}
+        ],
+        userReview: [
+          {body: null},
+          {starRating: null},
+          {costRating: null},
         ],
         pagedVenues: [],
         perPage: 10,

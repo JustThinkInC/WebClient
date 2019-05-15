@@ -13,6 +13,12 @@
                 <v-btn icon class="mr-3">
                   <v-icon>edit</v-icon>
                 </v-btn>
+
+                <!--TODO Edit/Delete profile photo-->
+                <v-btn icon>
+                  <v-icon>more_vert</v-icon>
+                </v-btn>
+
               </v-card-title>
 
               <v-spacer></v-spacer>

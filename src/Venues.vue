@@ -234,14 +234,8 @@
                             <!--Ratings-->
                             <div class="text-xs-center mt5">
                               <v-rating v-model="userReview.starRating" hover color="yellow darken-3"></v-rating>
-                              <v-select
-                                dense
-                                :items=maxCostOptions
-                                item-text="text"
-                                item-value="raw"
-                                label="Max Cost"
-                                attach=""
-                                v-on:input="userReview.costRating">
+                              <v-select dense :items=maxCostOptions item-text="text" item-value="raw" label="Max Cost"
+                                attach="" v-on:input="userReview.costRating">
                               </v-select>
                             </div>
 
@@ -250,10 +244,11 @@
                             </v-textarea>
                           </v-card-text>
                           <v-divider></v-divider>
+
                           <!--Post & Cancel buttons-->
                           <v-card-actions class="justify-space-between">
                             <v-btn flat>Cancel</v-btn>
-                            <v-btn color="primary" flat>
+                            <v-btn color="primary" flat v-on:click="postReview(selectedVenue.venueId)">
                               Rate Now
                             </v-btn>
                           </v-card-actions>
@@ -502,6 +497,22 @@
           .then(function (response) {
             this.selectedVenueReviews = response.data;
           });
+      },
+      postReview: function (venueId) {
+        this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/reviews",
+          JSON.stringify({
+            "username": this.login,
+            "email": this.login,
+            "password": this.pass
+          }),
+          {
+            headers: {
+              "Content-type": "application/json",
+              "X-Authorization": this.$cookie.get("authToken")
+            }
+          }).then(function (response) {
+            console.log("Review posted");
+        })
       }
     },
     components: {

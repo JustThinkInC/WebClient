@@ -221,37 +221,43 @@
                 <v-card>
                   <v-card-text>
                     <v-flex md4>
-                      <v-dialog width="20%">
-                        <template v-slot:activator="{ on }">
-                          <a v-on="on">Add your review</a>
-                        </template>
+                      <a v-if="canReview()" v-on:click="addReview = !addReview">Add your review</a>
+                      <v-dialog width="20%" v-model="addReview">
+
                         <v-card>
                           <v-card-title class="headline">
                             Review {{ selectedVenue.venueName }}
                           </v-card-title>
 
-                          <v-card-text>
-                            <!--Ratings-->
-                            <div class="text-xs-center mt5">
-                              <v-rating v-model="userReview.starRating" hover color="yellow darken-3"></v-rating>
-                              <v-select dense :items=maxCostOptions item-text="text" item-value="raw" label="Max Cost"
-                                attach="" v-on:input="userReview.costRating">
-                              </v-select>
-                            </div>
+                          <v-form ref="form">
+                            <v-card-text>
+                              <p class="font-weight-light">All fields are required</p>
+                              <!--Ratings-->
+                              <div class="text-xs-center mt5">
+                                <v-rating dense v-model="userReview.starRating" hover color="yellow darken-3">
+                                </v-rating>
+                                <v-select dense :items=maxCostOptions item-text="text" item-value="raw"
+                                          label="Cost Rating"
+                                          attach="" v-model="userReview.costRating" :rules="[rules.required]">
+                                </v-select>
+                              </div>
 
-                            <!--Review body-->
-                            <v-textarea dense v-model="userReview.body" outline single-line>
-                            </v-textarea>
-                          </v-card-text>
-                          <v-divider></v-divider>
+                              <!--Review body-->
+                              <v-textarea dense v-model="userReview.body" outline single-line :rules="[rules.required]">
+                              </v-textarea>
+                            </v-card-text>
+                            <v-divider></v-divider>
 
-                          <!--Post & Cancel buttons-->
-                          <v-card-actions class="justify-space-between">
-                            <v-btn flat>Cancel</v-btn>
-                            <v-btn color="primary" flat v-on:click="postReview(selectedVenue.venueId)">
-                              Rate Now
-                            </v-btn>
-                          </v-card-actions>
+
+                            <!--Post & Cancel buttons-->
+                            <v-card-actions class="justify-space-between">
+                              <v-btn flat v-on:click="addReview = !addReview">Cancel</v-btn>
+                              <v-btn color="primary" flat
+                                     v-on:click="postReview(selectedVenue.venueId)">
+                                Rate Now
+                              </v-btn>
+                            </v-card-actions>
+                          </v-form>
 
                         </v-card>
                       </v-dialog>
@@ -306,6 +312,10 @@
       </v-dialog>
     </v-layout>
 
+    <v-snackbar right top v-model="successSnackbar" color="success">
+      Review posted!
+    </v-snackbar>
+
     <!--Pagination-->
     <v-layout justify-center row class="text-xs-center">
       <div class="text-xs-center">
@@ -327,8 +337,11 @@
   export default {
     data() {
       return {
+        currentUser: null,
         error: "",
         errorFlag: false,
+        addReview: false,
+        successSnackbar: false,
         venues: [],
         selectedVenue: "",
         selectedVenueReviews: null,
@@ -367,6 +380,7 @@
           {starRating: null},
           {costRating: null},
         ],
+        rules: {required: value => (value !== undefined && value !== null) || 'Required.'},
         pagedVenues: [],
         perPage: 10,
         totalRows: 1,
@@ -375,12 +389,26 @@
       }
     },
     mounted: function () {
+      this.getCurrentUser();
       this.getVenues();
       this.getCategories();
       this.getCities();
       this.browserLocation();
     },
+    computed: {},
     methods: {
+      canReview: function () {
+        if (this.currentUser.userId === this.selectedVenue.admin.userId) return false;
+        if (this.selectedVenueReviews !== null) {
+          const reviewed = this.selectedVenueReviews.find(review => review.reviewAuthor.userId === this.currentUser.userId);
+          if (reviewed) return false;
+        }
+
+        return true;
+      },
+      getCurrentUser: function () {
+        this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
+      },
       getVenues: function () {
         this.$http.get("http://localhost:4941/api/v1/venues")
           .then(function (response) {
@@ -499,20 +527,23 @@
           });
       },
       postReview: function (venueId) {
-        this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/reviews",
-          JSON.stringify({
-            "username": this.login,
-            "email": this.login,
-            "password": this.pass
-          }),
-          {
-            headers: {
-              "Content-type": "application/json",
-              "X-Authorization": this.$cookie.get("authToken")
-            }
-          }).then(function (response) {
-            console.log("Review posted");
-        })
+        if (this.$refs.form.validate() && this.userReview.starRating) {
+          this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/reviews",
+            JSON.stringify({
+              "reviewBody": this.userReview.body,
+              "starRating": this.userReview.starRating,
+              "costRating": this.userReview.costRating
+            }),
+            {
+              headers: {
+                "Content-type": "application/json",
+                "X-Authorization": this.$cookie.get("authToken")
+              }
+            }).then(function (response) {
+              this.addReview = !this.addReview;
+            this.successSnackbar = true;
+          })
+        }
       }
     },
     components: {

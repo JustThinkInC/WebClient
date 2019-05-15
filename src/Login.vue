@@ -52,9 +52,13 @@
       }
     },
     methods: {
-      setUser: function(userId) {
-        this.$http.get("http://localhost:4941/api/v1/users/"+userId)
-          .then(function(response) {
+      setUser: function (userId, auth) {
+        this.$http.get("http://localhost:4941/api/v1/users/" + userId,
+          {
+            headers: {
+              "X-Authorization": auth
+            }
+          }).then(function (response) {
             let userData = response.data;
             userData['userId'] = userId;
             this.$cookie.set("currentUser", JSON.stringify(userData));
@@ -72,9 +76,9 @@
               "Content-type": "application/json",
             }
           }).then(function (response) {
-            const data = response.data;
+          const data = response.data;
           this.$cookie.set("authToken", data.token);
-          this.setUser(response.data.userId);
+          this.setUser(response.data.userId, data.token);
         }, (function (error) {
           this.error = error;
           this.errorFlag = true;

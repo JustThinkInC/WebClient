@@ -96,6 +96,16 @@
         currentUser: JSON.parse(this.$cookie.get("currentUser")),
       }
     },
+    created: function () {
+      this.checkLoggedIn();
+    },
+    methods: {
+     checkLoggedIn: function () {
+       if (!this.$cookie.get("currentUser")) {
+         this.$router.push("/venues");
+       }
+     }
+    },
     components: {Menu}
   }
 </script>

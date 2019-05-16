@@ -313,7 +313,7 @@
     <!--Show admin's profile-->
     <v-layout align-center fill-height id="adminCard" >
       <v-dialog v-model="showAdmin" width="50%">
-        <v-card>
+        <v-card v-if="selectedVenue.admin && selectedVenue.admin.info">
           <v-img>
             <v-layout column fill-height>
 
@@ -330,7 +330,7 @@
 
               <v-list-tile-content>
                 <v-list-tile-sub-title>Username</v-list-tile-sub-title>
-                <v-list-tile-title>{{selectedVenue.admin.username}}</v-list-tile-title>
+                <v-list-tile-title>{{selectedVenue.admin.info.username}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
 
@@ -446,7 +446,6 @@
       this.getCities();
       this.browserLocation();
     },
-    computed: {},
     methods: {
       canReview: function () {
         if (this.currentUser === null || this.currentUser.userId === this.selectedVenue.admin.userId) return false;
@@ -565,11 +564,12 @@
             // Workaround for API not returning these nicely for specific venue
             const venue = this.venues.find(venue => venue.venueId === venueId);
             this.selectedVenue.venueId = venueId;
+            this.getVenueReviews(venueId);
+            this.getVenueAdmin(this.selectedVenue.admin.userId);
             this.selectedVenue.meanStarRating = venue.meanStarRating;
             this.selectedVenue.modeCostRating = venue.modeCostRating;
             this.selectedVenue.primaryPhoto = venue.primaryPhoto;
-            this.getVenueReviews(venueId);
-            this.getVenueAdmin(this.selectedVenue.admin.userId);
+
           });
       },
       getVenueReviews: function (venueId) {

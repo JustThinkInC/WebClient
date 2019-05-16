@@ -10,14 +10,30 @@
               <v-card-title>
                 <!--TODO open edit form-->
                 <v-spacer></v-spacer>
-                <v-btn icon class="mr-3">
+                <v-btn icon class="mr-3" v-on:click="editProfile = !editProfile">
                   <v-icon>edit</v-icon>
                 </v-btn>
 
                 <!--TODO Edit/Delete profile photo-->
-                <v-btn icon>
-                  <v-icon>more_vert</v-icon>
-                </v-btn>
+                <v-menu>
+                  <template v-slot:activator="{ on }">
+                    <v-btn icon v-on="on">
+                      <v-icon>more_vert</v-icon>
+                    </v-btn>
+                  </template>
+
+                  <v-list>
+                    <v-list-tile v-on:click="addPhoto()">
+                      <v-list-tile-title hover v-on:click="openPhotoUploader = !openPhotoUploader">Set profile photo
+                      </v-list-tile-title>
+                    </v-list-tile>
+
+                    <v-list-tile v-on:click="deleteProfilePhoto()">
+                      <v-list-tile-title>Delete profile photo</v-list-tile-title>
+                    </v-list-tile>
+                  </v-list>
+
+                </v-menu>
 
               </v-card-title>
 
@@ -83,6 +99,16 @@
     </v-layout>
 
 
+    <v-snackbar right top v-model="successSnackbar" color="success">
+      {{message}}
+      <v-btn color="white" flat @click="successSnackbar = false">Close</v-btn>
+    </v-snackbar>
+
+    <v-snackbar right top v-model="errorSnackbar" color="error">
+      {{message}}
+      <v-btn color="white" flat @click="errorSnackbar = false">Close</v-btn>
+    </v-snackbar>
+
   </v-app>
 </template>
 
@@ -94,17 +120,43 @@
     data() {
       return {
         currentUser: JSON.parse(this.$cookie.get("currentUser")),
+        editProfile: false,
+        uploadPhoto: false,
+        successSnackbar: false,
+        errorSnackbar: false,
+        filename: "",
+        message: ""
       }
     },
     created: function () {
       this.checkLoggedIn();
     },
     methods: {
-     checkLoggedIn: function () {
-       if (!this.$cookie.get("currentUser")) {
-         this.$router.push("/venues");
-       }
-     }
+      checkLoggedIn: function () {
+        if (!this.$cookie.get("currentUser")) {
+          this.$router.push("/venues");
+        }
+      },
+      deleteProfilePhoto: function () {
+        this.$http.delete("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo")
+          .then(function (response) {
+            this.message = "Photo deleted!";
+            this.successSnackbar = true;
+            this.errorSnackbar = false;
+          }, function (error) {
+            this.message = "Could not delete photo";
+            this.successSnackbar = false;
+            this.errorSnackbar = true;
+          });
+      },
+      addPhoto: function () {
+        this.$http.put("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo",
+          {}, {
+            headers: {
+              "Content-Type": (filename.split('.')) ? "image/png" : "image/jpeg"
+            }
+          })
+      }
     },
     components: {Menu}
   }

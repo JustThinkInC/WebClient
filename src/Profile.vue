@@ -5,7 +5,7 @@
     <v-layout align-center fill-height id="profileCard">
       <v-flex md4 offset-sm4>
         <v-card>
-          <v-img :src="currentUser.profilePhoto">
+          <v-img :src="currentUser.photo" contain height="150px">
             <v-layout column fill-height>
               <v-card-title>
                 <!--TODO open edit form-->
@@ -14,7 +14,6 @@
                   <v-icon>edit</v-icon>
                 </v-btn>
 
-                <!--TODO Edit/Delete profile photo-->
                 <v-menu>
                   <template v-slot:activator="{ on }">
                     <v-btn icon v-on="on">
@@ -22,6 +21,7 @@
                     </v-btn>
                   </template>
 
+                  <!--TODO: Add photo uploader-->
                   <v-list>
                     <v-list-tile v-on:click="addPhoto()">
                       <v-list-tile-title hover v-on:click="openPhotoUploader = !openPhotoUploader">Set profile photo

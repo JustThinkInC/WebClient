@@ -67,11 +67,19 @@
               "X-Authorization": auth
             }
           }).then(function (response) {
-            let userData = response.data;
-            userData['userId'] = userId;
+          let userData = response.data;
+          userData['userId'] = userId;
+          this.$http.get("http://localhost:4941/api/v1/users/" + userId + "/photo")
+            .then(function (response) {
+              userData['photo'] = response.data;
+            }, function (error) {
+              userData['photo'] = "src/assets/logo.png";
+            }).then(function (resolve) {
             this.$cookie.set("currentUser", JSON.stringify(userData));
             this.$router.push("/venues");
-          });
+          })
+
+        });
       },
       submitLogin: function () {
         this.$http.post("http://localhost:4941/api/v1/users/login",

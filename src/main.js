@@ -27,16 +27,6 @@ const routes = [
     component: Home
   },
   {
-    path: "/users/:userId",
-    name: "user",
-    component: Users
-  },
-  {
-    path: "/users",
-    name: "users",
-    component: Users
-  },
-  {
     path:  "/venues",
     name: "venues",
     component: Venues
@@ -62,6 +52,7 @@ const routes = [
     component: Admin
   }
 ];
+
 
 const router = new VueRouter({
   routes: routes,

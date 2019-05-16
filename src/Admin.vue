@@ -19,7 +19,7 @@
 
       <v-layout align-center fill-height justify-space-around row wrap>
         <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
-          <v-card hover>
+          <v-card>
 
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -29,7 +29,7 @@
             <!--Venue Name with link-->
             <v-card-title primary-title>
               <div class="column">
-                <div class="headline" v-on:click="showVenue=!showVenue; getVenue(venue.venueId)">
+                <div class="headline">
                   <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
                   {{ venue.venueName }}
                   <!--</router-link>-->

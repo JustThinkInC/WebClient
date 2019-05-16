@@ -51,7 +51,15 @@
         pass: null
       }
     },
+    created: function () {
+      this.checkLoggedIn();
+    },
     methods: {
+      checkLoggedIn: function () {
+        if (this.$cookie.get("currentUser")) {
+          this.$router.push("/venues");
+        }
+      },
       setUser: function (userId, auth) {
         this.$http.get("http://localhost:4941/api/v1/users/" + userId,
           {

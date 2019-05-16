@@ -106,7 +106,15 @@
     components: {
       Menu
     },
+    created: function () {
+      this.checkLoggedIn();
+    },
     methods: {
+      checkLoggedIn: function () {
+        if (this.$cookie.get("currentUser")) {
+          this.$router.push("/venues");
+        }
+      },
       checkEmail: function() {
       //
       },

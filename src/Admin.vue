@@ -326,12 +326,20 @@
         }
       }
     },
+    created: function () {
+      this.checkLoggedIn();
+    },
     mounted: function () {
       this.getUser();
       this.getVenues();
       this.getCategories();
     },
     methods: {
+      checkLoggedIn: function () {
+        if (!this.$cookie.get("currentUser")) {
+          this.$router.push("/venues");
+        }
+      },
       getUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
       },

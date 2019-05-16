@@ -130,8 +130,8 @@
       <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
         <v-card flat v-if="selectedVenue">
           <!--TODO Add all Venues images, emphasises primary...maybe use carousel-->
-          <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain
-                 height="150px"></v-img>
+          <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px">
+          </v-img>
 
           <!--Venue Name with link-->
           <v-card-title primary-title>
@@ -398,7 +398,7 @@
     computed: {},
     methods: {
       canReview: function () {
-        if (this.currentUser.userId === this.selectedVenue.admin.userId) return false;
+        if (this.currentUser === null || this.currentUser.userId === this.selectedVenue.admin.userId) return false;
         if (this.selectedVenueReviews !== null) {
           const reviewed = this.selectedVenueReviews.find(review => review.reviewAuthor.userId === this.currentUser.userId);
           if (reviewed) return false;

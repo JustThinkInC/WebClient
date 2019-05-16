@@ -84,9 +84,7 @@
             <v-card-title primary-title>
               <div class="column">
                 <a class="headline" v-on:click="showVenue=!showVenue; getVenue(venue.venueId)">
-                  <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
                   {{ venue.venueName }}
-                  <!--</router-link>-->
                 </a>
 
                 <div class="subheading">
@@ -133,7 +131,7 @@
           <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px">
           </v-img>
 
-          <!--Venue Name with link-->
+          <!--Venue info-->
           <v-card-title primary-title>
             <div class="column">
               <div class="headline">
@@ -154,7 +152,7 @@
                   <br>
                   <i>Address: </i> {{ selectedVenue.address}}
                   <br>
-                  <i>Administrator: </i> {{ selectedVenue.admin.username}}
+                  <i>Administrator: </i> <a v-on:click="showAdmin = !showAdmin">{{ selectedVenue.admin.username}}</a>
                 </p>
               </v-list-tile-content>
 
@@ -312,6 +310,58 @@
       </v-dialog>
     </v-layout>
 
+    <!--Show admin's profile-->
+    <v-layout align-center fill-height id="adminCard" >
+      <v-dialog v-model="showAdmin" width="50%">
+        <v-card>
+          <v-img>
+            <v-layout column fill-height>
+
+              <v-card-title class="white--text pl-5 pt-5">
+                <div class="display-1 pl-5 pt-5">Example</div>
+              </v-card-title>
+            </v-layout>
+          </v-img>
+
+          <v-list>
+            <br>
+            <v-list-tile>
+              <v-list-tile-action></v-list-tile-action>
+
+              <v-list-tile-content>
+                <v-list-tile-sub-title>Username</v-list-tile-sub-title>
+                <v-list-tile-title>{{selectedVenue.admin.username}}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-divider inset></v-divider>
+
+            <v-list-tile>
+              <v-list-tile-action></v-list-tile-action>
+
+              <v-list-tile-content>
+                <v-list-tile-sub-title>Given name</v-list-tile-sub-title>
+                <v-list-tile-title>{{selectedVenue.admin.info.givenName}}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-divider inset></v-divider>
+
+            <v-list-tile>
+              <v-list-tile-action></v-list-tile-action>
+
+              <v-list-tile-content>
+                <v-list-tile-sub-title>Last name</v-list-tile-sub-title>
+                <v-list-tile-title>{{selectedVenue.admin.info.familyName}}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-divider inset></v-divider>
+          </v-list>
+        </v-card>
+      </v-dialog>
+    </v-layout>
+
     <v-snackbar right top v-model="successSnackbar" color="success">
       Review posted!
     </v-snackbar>
@@ -341,6 +391,7 @@
         error: "",
         errorFlag: false,
         addReview: false,
+        showAdmin: false,
         successSnackbar: false,
         venues: [],
         selectedVenue: "",
@@ -518,12 +569,19 @@
             this.selectedVenue.modeCostRating = venue.modeCostRating;
             this.selectedVenue.primaryPhoto = venue.primaryPhoto;
             this.getVenueReviews(venueId);
+            this.getVenueAdmin(this.selectedVenue.admin.userId);
           });
       },
       getVenueReviews: function (venueId) {
         this.$http.get("http://localhost:4941/api/v1/venues/" + venueId + "/reviews")
           .then(function (response) {
             this.selectedVenueReviews = response.data;
+          });
+      },
+      getVenueAdmin: function (adminId) {
+        this.$http.get("http://localhost:4941/api/v1/users/" + adminId)
+          .then( function (response) {
+            this.selectedVenue.admin['info'] = response.data;
           });
       },
       postReview: function (venueId) {

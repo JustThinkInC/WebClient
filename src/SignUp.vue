@@ -18,7 +18,8 @@
                 <v-layout wrap>
                   <!--First Name and Last Name-->
                   <v-flex>
-                    <v-text-field outline v-model="givenName" name="name" :rules="[rules.required]" label="Name" type="text">
+                    <v-text-field outline v-model="givenName" name="name" :rules="[rules.required]" label="Name"
+                                  type="text">
                     </v-text-field>
                   </v-flex>
 
@@ -96,7 +97,7 @@
         rules: {
           required: value => !!value || 'Required.',
           emailRule: value => (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
-              .test(value) || 'Invalid Email Address',
+            .test(value) || 'Invalid Email Address',
           max: value => value.length <= 64 || 'Max 64 characters',
           min: value => value.length >= 6 || 'Min 6 characters',
           passwordMatch: () => this.password === this.passConfirm || ('The password you entered doesn\'t match')
@@ -115,31 +116,53 @@
           this.$router.push("/venues");
         }
       },
-      checkEmail: function() {
-      //
-      },
       submitSignUp: function () {
-        // TODO: Check user name unique, check email unique
-        // this.checkEmail().then(() => {
-          this.$http.post("http://localhost:4941/api/v1/users",
-            JSON.stringify({
-              "username": this.username,
-              "email": this.email,
-              "givenName": this.givenName,
-              "familyName": this.lastName,
-              "password": this.passConfirm
-            }), {
-              headers: {
-                "Content-type": "application/json",
-              }
-            }).then(function (response) {
-            console.log(response);
-            this.$router.push("/venues");
-          }, (function (error) {
-            this.error = error.statusText.split(":")[1];
-            this.errorFlag = true;
-          }));
-        // });
+        this.$http.post("http://localhost:4941/api/v1/users",
+          JSON.stringify({
+            "username": this.username,
+            "email": this.email,
+            "givenName": this.givenName,
+            "familyName": this.lastName,
+            "password": this.passConfirm
+          }), {
+            headers: {
+              "Content-type": "application/json",
+            }
+          }).then(function (response) {
+          console.log(response);
+          this.autoLogin();
+        }, (function (error) {
+          this.error = error.statusText.split(":")[1];
+          this.errorFlag = true;
+        }));
+      },
+      autoLogin: function () {
+        this.$http.post("http://localhost:4941/api/v1/users/login",
+          JSON.stringify({
+            "username": this.username,
+            "password": this.passConfirm
+          }), {
+            headers: {
+              "Content-type": "application/json"
+            }
+          }).then(function (response) {
+          const data = response.data;
+          this.$cookie.set("authToken", data.token);
+          this.setUser(response.data.userId, data.token);
+        });
+      },
+      setUser: function (userId, auth) {
+        this.$http.get("http://localhost:4941/api/v1/users/" + userId,
+          {
+            headers: {
+              "X-Authorization": auth
+            }
+          }).then(function (response) {
+          let userData = response.data;
+          userData['userId'] = userId;
+          this.$cookie.set("currentUser", JSON.stringify(userData));
+          this.$router.push("/venues");
+        });
       }
     }
   }

@@ -23,7 +23,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-icon v-on:click="edit = !edit; venue.id=venue.venueId">edit</v-icon>
+              <v-btn icon><v-icon v-on:click="edit = !edit; venue.id=venue.venueId">edit</v-icon></v-btn>
             </v-card-actions>
             <v-img :src="getVenuePrimaryPhoto(venue.venueId, venue.primaryPhoto)" contain height="150px"></v-img>
             <!--Venue Name with link-->

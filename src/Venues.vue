@@ -314,14 +314,7 @@
     <v-layout align-center fill-height id="adminCard" >
       <v-dialog v-model="showAdmin" width="50%">
         <v-card v-if="selectedVenue.admin && selectedVenue.admin.info">
-          <v-img>
-            <v-layout column fill-height>
-
-              <v-card-title class="white--text pl-5 pt-5">
-                <div class="display-1 pl-5 pt-5">Example</div>
-              </v-card-title>
-            </v-layout>
-          </v-img>
+          <v-img :src="selectedVenue.admin.photo" contain height="150px"></v-img>
 
           <v-list>
             <br>
@@ -583,6 +576,14 @@
           .then( function (response) {
             this.selectedVenue.admin['info'] = response.data;
           });
+
+        this.$http.get("http://localhost:4941/api/v1/users/"+adminId+"/photo")
+          .then( function (response) {
+            this.selectedVenue.admin['photo'] = response.data;
+            console.log(response.data);
+          }, function (error) {
+            this.selectedVenue.admin['photo'] = "src/assets/logo.png";
+          })
       },
       postReview: function (venueId) {
         if (this.$refs.form.validate() && this.userReview.starRating) {

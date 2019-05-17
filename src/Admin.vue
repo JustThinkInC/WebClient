@@ -9,9 +9,9 @@
       <v-layout align-end justify-end>
         <v-tooltip bottom nudge-right>
           <template v-slot:activator="{ on }">
-          <v-btn fab color="success" v-on:click="create = !create" v-on="on">
-            <v-icon>add</v-icon>
-          </v-btn>
+            <v-btn fab color="success" v-on:click="create = !create" v-on="on">
+              <v-icon>add</v-icon>
+            </v-btn>
           </template>
           <span>Add a venue</span>
         </v-tooltip>
@@ -23,7 +23,9 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn icon><v-icon v-on:click="edit = !edit; venue.id=venue.venueId">edit</v-icon></v-btn>
+              <v-btn icon>
+                <v-icon v-on:click="edit = !edit; venue.id=venue.venueId">edit</v-icon>
+              </v-btn>
             </v-card-actions>
             <v-img :src="getVenuePrimaryPhoto(venue.venueId, venue.primaryPhoto)" contain height="150px"></v-img>
             <!--Venue Name with link-->
@@ -130,6 +132,39 @@
                   </v-card-text>
                 </v-card>
               </v-expansion-panel-content>
+
+              <!--Photos panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <i>Photos</i>
+                  </div>
+                </template>
+                <v-card v-on:click="addPhoto(venue.venueId)">
+                  <v-card-text>
+                    <label for="photoUpload"><a class="font-weight-light">Add photo</a></label>
+                    <input id="photoUpload" type="file" style="display: none" ref="file" @change="addPhoto">
+                  </v-card-text>
+
+                </v-card>
+                <v-card v-for="photo in venue.photos">
+                  <v-card-text class="grey lighten-5">
+                    <!--<div class="font-weight-bold">-->
+                    <!--{{ review.reviewAuthor.username}}-->
+                    <!--<p class="grey&#45;&#45;text">-->
+                    <!--{{ review.timePosted.split("T")[0].replace(/-/g, "/")}}-->
+                    <!--</p>-->
+                    <!--</div>-->
+
+                    <v-layout align-start justify-start>
+                      <v-img
+                        :src="'http://localhost:4941/api/v1/venues/'+venue.venueId+'/photos/'+photo.photoFilename"></v-img>
+                    </v-layout>
+                  </v-card-text>
+                </v-card>
+              </v-expansion-panel-content>
+
+
             </v-expansion-panel>
 
           </v-card>
@@ -348,11 +383,22 @@
           .then(function (response) {
             this.venues = response.data;
             this.getVenueReviews();
-            this.paginate(this.perPage, 0);
+            this.getVenuePhotos();
           }, function (error) {
             this.error = error;
             this.errorFlag = true;
-          })
+          });
+      },
+      getVenuePhotos: function () {
+        for (let i = 0; i < this.venues.length; i++) {
+          this.$http.get("http://localhost:4941/api/v1/venues/" + this.venues[i].venueId)
+            .then(function (response) {
+              this.venues[i]["photos"] = response.data.photos;
+            })
+            .then(function (resolve) {
+              this.paginate(this.perPage, 0);
+            });
+        }
       },
       getCategories: function () {
         this.$http.get("http://localhost:4941/api/v1/categories")
@@ -425,6 +471,36 @@
           this.valid = false;
           return false;
         }
+      },
+      addPhoto: function (venueId) {
+        this.photoFile = $("#photoUpload").val();
+        if (!this.photoFile) return;
+        if ((this.photoFile.size / (1024 * 1024)) > this.MAX_PHOTO_SIZE) {
+          this.message = "Photo size must be less than 20MB";
+          this.errorSnackbar = true;
+          this.successSnackbar = false;
+          return;
+        }
+        this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/photos",
+          {
+            "photo": this.photoFile,
+            "description": "",
+            "makePrimary": false
+          },
+          {
+            headers: {
+              "X-Authorization": this.$cookie.get("authToken")
+            }
+          }).then(function (response) {
+          this.message = "Photo set!";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+          this.setNewPhoto();
+        }, function (error) {
+          this.message = "Could not set photo";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        })
       },
       editVenue: function () {
         if (this.checkForm()) {

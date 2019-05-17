@@ -5,7 +5,7 @@
     <v-layout align-center fill-height id="profileCard">
       <v-flex md4 offset-sm4>
         <v-card>
-          <v-img :src="currentUser.photo" contain height="150px">
+          <v-img :src="getUserPhoto()" height="300px">
             <v-layout column fill-height>
               <v-card-title>
                 <!--TODO open edit form-->
@@ -24,7 +24,9 @@
                   <!--TODO: Add photo uploader-->
                   <v-list>
                     <v-list-tile v-on:click="addPhoto()">
-                      <v-list-tile-title hover v-on:click="openPhotoUploader = !openPhotoUploader">Set profile photo
+                      <input type="file" ref="file" style="display: none" @change="addPhoto">
+
+                      <v-list-tile-title hover v-on:click="$refs.file.click()">Set profile photo
                       </v-list-tile-title>
                     </v-list-tile>
 
@@ -35,12 +37,6 @@
 
                 </v-menu>
 
-              </v-card-title>
-
-              <v-spacer></v-spacer>
-
-              <v-card-title class="white--text pl-5 pt-5">
-                <div class="display-1 pl-5 pt-5">Example</div>
               </v-card-title>
             </v-layout>
           </v-img>
@@ -125,7 +121,8 @@
         successSnackbar: false,
         errorSnackbar: false,
         filename: "",
-        message: ""
+        message: "",
+        MAX_PHOTO_SIZE: 20
       }
     },
     created: function () {
@@ -149,13 +146,43 @@
             this.errorSnackbar = true;
           });
       },
+      setNewPhoto: function () {
+        this.currentUser.photo = "http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo";
+        this.$cookie.set("currentUser", JSON.stringify(this.currentUser))
+      },
       addPhoto: function () {
+        this.photoFile = this.$refs.file.files[0];
+        if (!this.photoFile) return;
+        if ((this.photoFile.size / (1024 * 1024)) > this.MAX_PHOTO_SIZE) {
+          this.message = "Photo size must be less than 20MB";
+          this.errorSnackbar = true;
+          this.successSnackbar = false;
+          return;
+        }
+        console.log("NAME " + this.photoFile.name);
+        console.log("LEN " + this.photoFile.type);
+        // return;
+        const reader = new FileReader();
         this.$http.put("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo",
-          {}, {
+          this.photoFile,
+          {
             headers: {
-              "Content-Type": (filename.split('.')) ? "image/png" : "image/jpeg"
+              "Content-Type": this.photoFile.type,
+              "X-Authorization": this.$cookie.get("authToken")
             }
-          })
+          }).then(function (response) {
+          this.message = "Photo set!";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+          this.setNewPhoto();
+        }, function (error) {
+          this.message = "Could not set photo";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        })
+      },
+      getUserPhoto: function () {
+        return this.currentUser.photo;
       }
     },
     components: {Menu}

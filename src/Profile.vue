@@ -135,11 +135,17 @@
         }
       },
       deleteProfilePhoto: function () {
-        this.$http.delete("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo")
+        this.$http.delete("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo", {
+          headers: {
+            "X-Authorization": this.$cookie.get("authToken")
+          }
+        })
           .then(function (response) {
             this.message = "Photo deleted!";
             this.successSnackbar = true;
             this.errorSnackbar = false;
+            this.currentUser.photo = "src/assets/defaultProfile.png";
+            this.$cookie.set("currentUser", this.currentUser);
           }, function (error) {
             this.message = "Could not delete photo";
             this.successSnackbar = false;

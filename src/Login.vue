@@ -73,7 +73,7 @@
             .then(function (response) {
               userData['photo'] = response.url;
             }, function (error) {
-              userData['photo'] = "src/assets/logo.png";
+              userData['photo'] = "src/assets/defaultProfile.png";
             }).then(function (resolve) {
             this.$cookie.set("currentUser", JSON.stringify(userData));
             this.$router.push("/venues");

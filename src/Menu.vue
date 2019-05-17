@@ -103,28 +103,14 @@
     },
     computed: {
       getUserPhoto: function () {
-        if (this.currentUser.profilePhoto) {
-          return this.currentUser.profilePhoto;
-        } else {
-          return 'src/assets/logo.png';
+        if (this.currentUser.photo) {
+          return this.currentUser.photo;
         }
-      },
+      }
     },
     methods: {
       getCurrentUser: function () {
         this.currentUser = JSON.parse(this.$cookie.get("currentUser"));
-        if (this.currentUser && this.currentUser.profilePhoto === null) {
-          this.setUserPhoto();
-        }
-      },
-      setUserPhoto: function () {
-        const defaultPath = "src/assets/logo.png";
-        this.$http.get("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo")
-          .then(function (response) {
-            this.currentUser.profilePhoto = response.data;
-          }, function (error) {
-            this.currentUser.profilePhoto = defaultPath;
-          });
       },
       logout: function () {
         this.$http.post("http://localhost:4941/api/v1/users/logout", {},
@@ -133,10 +119,10 @@
               "X-Authorization": this.$cookie.get("authToken"),
             }
           }).then(function (response) {
-            console.log(response)
-            this.$cookie.delete("currentUser");
-            this.$cookie.delete("authToken");
-            location.reload();  // Refresh page
+          console.log(response)
+          this.$cookie.delete("currentUser");
+          this.$cookie.delete("authToken");
+          location.reload();  // Refresh page
         });
       }
     }

@@ -119,7 +119,6 @@
               "X-Authorization": this.$cookie.get("authToken"),
             }
           }).then(function (response) {
-          console.log(response)
           this.$cookie.delete("currentUser");
           this.$cookie.delete("authToken");
           location.reload();  // Refresh page

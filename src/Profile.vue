@@ -21,7 +21,6 @@
                     </v-btn>
                   </template>
 
-                  <!--TODO: Add photo uploader-->
                   <v-list>
                     <v-list-tile v-on:click="addPhoto()">
                       <input type="file" ref="file" style="display: none" @change="addPhoto">
@@ -165,12 +164,7 @@
           this.successSnackbar = false;
           return;
         }
-        console.log("NAME " + this.photoFile.name);
-        console.log("LEN " + this.photoFile.type);
-        // return;
-        const reader = new FileReader();
-        this.$http.put("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo",
-          this.photoFile,
+        this.$http.put("http://localhost:4941/api/v1/users/" + this.currentUser.userId + "/photo", this.photoFile,
           {
             headers: {
               "Content-Type": this.photoFile.type,
@@ -185,7 +179,7 @@
           this.message = "Could not set photo";
           this.successSnackbar = false;
           this.errorSnackbar = true;
-        })
+        });
       },
       getUserPhoto: function () {
         return this.currentUser.photo;

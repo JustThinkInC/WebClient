@@ -311,7 +311,7 @@
     </v-layout>
 
     <!--Show admin's profile-->
-    <v-layout align-center fill-height id="adminCard" >
+    <v-layout align-center fill-height id="adminCard">
       <v-dialog v-model="showAdmin" width="50%">
         <v-card v-if="selectedVenue.admin && selectedVenue.admin.info">
           <v-img :src="selectedVenue.admin.photo" contain height="150px"></v-img>
@@ -573,12 +573,12 @@
       },
       getVenueAdmin: function (adminId) {
         this.$http.get("http://localhost:4941/api/v1/users/" + adminId)
-          .then( function (response) {
+          .then(function (response) {
             this.selectedVenue.admin['info'] = response.data;
           });
 
-        this.$http.get("http://localhost:4941/api/v1/users/"+adminId+"/photo")
-          .then( function (response) {
+        this.$http.get("http://localhost:4941/api/v1/users/" + adminId + "/photo")
+          .then(function (response) {
             this.selectedVenue.admin['photo'] = response.data;
             console.log(response.data);
           }, function (error) {
@@ -599,7 +599,7 @@
                 "X-Authorization": this.$cookie.get("authToken")
               }
             }).then(function (response) {
-              this.addReview = !this.addReview;
+            this.addReview = !this.addReview;
             this.successSnackbar = true;
           })
         }

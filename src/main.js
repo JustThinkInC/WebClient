@@ -7,7 +7,6 @@ import VueRouter from 'vue-router';
 import VueResource from 'vue-resource';
 import App from './App.vue';
 import Home from './Home.vue';
-import Users from './Users.vue';
 import Venues from './Venues.vue';
 import Login from './Login.vue';
 import SignUp from './SignUp.vue';
@@ -18,7 +17,6 @@ Vue.use(Vuetify,{iconfont: 'md'});
 Vue.use(VueRouter);
 Vue.use(VueResource);
 Vue.use(VueCookie);
-Vue.http.options.emulateJSON = true;
 
 const routes = [
   {

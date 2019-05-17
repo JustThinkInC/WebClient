@@ -140,10 +140,11 @@
                     <i>Photos</i>
                   </div>
                 </template>
-                <v-card v-on:click="addPhoto(venue.venueId)">
+                <v-card>
                   <v-card-text>
                     <label for="photoUpload"><a class="font-weight-light">Add photo</a></label>
-                    <input id="photoUpload" type="file" style="display: none" ref="file" @change="addPhoto">
+                    <input id="photoUpload" type="file" accept="image/png,image/jpeg" style="display: none" ref="file"
+                           @change="addPhoto(venue.venueId)">
                   </v-card-text>
 
                 </v-card>
@@ -473,7 +474,9 @@
         }
       },
       addPhoto: function (venueId) {
-        this.photoFile = $("#photoUpload").val();
+        this.photoFile = document.querySelector('input[type=file]').files[0];
+        // console.log(this.photoFile);
+        // return;
         if (!this.photoFile) return;
         if ((this.photoFile.size / (1024 * 1024)) > this.MAX_PHOTO_SIZE) {
           this.message = "Photo size must be less than 20MB";
@@ -481,58 +484,69 @@
           this.successSnackbar = false;
           return;
         }
+        console.log(venueId);
+        console.log(this.photoFile)
+        let formData = new FormData();
+        formData.append("photo", this.photoFile);
+        formData.append("description", "");
+        formData.append("makePrimary", false);
         this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/photos",
-          {
-            "photo": this.photoFile,
-            "description": "",
-            "makePrimary": false
-          },
+          JSON.stringify({
+            // "form-data": formData
+            photo: this.photoFile,
+            description: "a new image",
+            makePrimary: false
+          }),
           {
             headers: {
+              // "Content-Type": "application/x-www-form-urlencoded",
               "X-Authorization": this.$cookie.get("authToken")
             }
-          }).then(function (response) {
-          this.message = "Photo set!";
-          this.successSnackbar = true;
-          this.errorSnackbar = false;
-          this.setNewPhoto();
-        }, function (error) {
-          this.message = "Could not set photo";
-          this.successSnackbar = false;
-          this.errorSnackbar = true;
-        })
-      },
-      editVenue: function () {
-        if (this.checkForm()) {
-          //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
-          //     JSON.stringify({
-          //       "venueName": this.venue.name,
-          //       "categoryId": this.categories.indexOf(this.venue.category),
-          //       "city": this.venue.city,
-          //       "address": this.venue.address,
-          //       "shortDescription": this.venue.shortDescription,
-          //       "longDescription": this.venue.longDescription,
-          //       "latitude": this.venue.latitude,
-          //       "longitude": this.venue.longitude
-          //     }), {
-          //       headers: {
-          //         "Content-type": "application/json",
-          //         "X-Authorization": this.$cookie.get("authToken")
-          //       }
-          //     }).then(function (response) {
-          //     this.edit = !this.edit;
-          //   }, function (error) {
-          //     this.error = error;
-          //     this.errorFlag = true;
-          //   });
-        } else {
-          console.log("INVALID")
-        }
-      }
+          }
+      ).then(function (response) {
+        // console.log(response)
+        this.message = "Photo added!";
+        this.successSnackbar = true;
+        this.errorSnackbar = false;
+        this.setNewPhoto();
+      }, function (error) {
+        this.message = "Could not add photo";
+        this.successSnackbar = false;
+        this.errorSnackbar = true;
+      })
     },
-    components: {
-      Menu
+    editVenue: function () {
+      if (this.checkForm()) {
+        //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
+        //     JSON.stringify({
+        //       "venueName": this.venue.name,
+        //       "categoryId": this.categories.indexOf(this.venue.category),
+        //       "city": this.venue.city,
+        //       "address": this.venue.address,
+        //       "shortDescription": this.venue.shortDescription,
+        //       "longDescription": this.venue.longDescription,
+        //       "latitude": this.venue.latitude,
+        //       "longitude": this.venue.longitude
+        //     }), {
+        //       headers: {
+        //         "Content-type": "application/json",
+        //         "X-Authorization": this.$cookie.get("authToken")
+        //       }
+        //     }).then(function (response) {
+        //     this.edit = !this.edit;
+        //   }, function (error) {
+        //     this.error = error;
+        //     this.errorFlag = true;
+        //   });
+      } else {
+        console.log("INVALID")
+      }
     }
+  }
+  ,
+  components: {
+    Menu
+  }
   }
 </script>
 

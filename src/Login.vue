@@ -71,7 +71,7 @@
           userData['userId'] = userId;
           this.$http.get("http://localhost:4941/api/v1/users/" + userId + "/photo")
             .then(function (response) {
-              userData['photo'] = response.data;
+              userData['photo'] = response.url;
             }, function (error) {
               userData['photo'] = "src/assets/logo.png";
             }).then(function (resolve) {

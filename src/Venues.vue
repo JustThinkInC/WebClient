@@ -580,9 +580,8 @@
         this.$http.get("http://localhost:4941/api/v1/users/" + adminId + "/photo")
           .then(function (response) {
             this.selectedVenue.admin['photo'] = response.data;
-            console.log(response.data);
           }, function (error) {
-            this.selectedVenue.admin['photo'] = "src/assets/logo.png";
+            this.selectedVenue.admin['photo'] = "src/assets/defaultProfile.png";
           })
       },
       postReview: function (venueId) {

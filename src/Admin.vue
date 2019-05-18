@@ -72,6 +72,30 @@
 
             <!--Detail panels-->
             <v-expansion-panel>
+
+              <!--Information panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <i>Information</i>
+                  </div>
+                </template>
+
+                <v-card>
+                  <v-card-text class="grey lighten-3">
+                    <p>
+                      <b>City: </b> {{ venue.city }}
+                      <br>
+                      <b>Address: </b> {{ venue.address }}
+                      <br>
+                      <b>Latitude: </b> {{venue.latitude }}
+                      <br>
+                      <b>Longitude: </b> {{venue.longitude }}
+                    </p>
+                  </v-card-text>
+                </v-card>
+              </v-expansion-panel-content>
+
               <!--Description panel-->
               <v-expansion-panel-content>
                 <template v-slot:header>
@@ -423,21 +447,31 @@
         this.$http.get("http://localhost:4941/api/v1/venues?adminId=" + this.currentUser.userId)
           .then(function (response) {
             this.venues = response.data;
+            // Since the API does not give details back, this is how to get them
             this.getVenueReviews();
+            this.getVenueAddresses();
             this.getVenuePhotos();
           }, function (error) {
             this.error = error;
             this.errorFlag = true;
           });
       },
+      getVenueAddresses: function () {
+        for (let i = 0; i < this.venues.length; i++) {
+          this.$http.get("http://localhost:4941/api/v1/venues/" + this.venues[i].venueId)
+            .then(function (response) {
+              this.venues[i]["address"] = response.data.address;
+            })
+            .then(function (resolve) {
+              this.paginate(this.perPage, 0);
+            });
+        }
+      },
       getVenuePhotos: function () {
         for (let i = 0; i < this.venues.length; i++) {
           this.$http.get("http://localhost:4941/api/v1/venues/" + this.venues[i].venueId)
             .then(function (response) {
               this.venues[i]["photos"] = response.data.photos;
-            })
-            .then(function (resolve) {
-              this.paginate(this.perPage, 0);
             });
         }
       },

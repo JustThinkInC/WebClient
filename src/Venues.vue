@@ -194,6 +194,7 @@
 
           <v-layout>
             <v-expansion-panel>
+
               <!--Description panel-->
               <v-expansion-panel-content>
                 <template v-slot:header>
@@ -218,6 +219,7 @@
                 </v-card>
 
               </v-expansion-panel-content>
+
               <!--Reviews panel-->
               <v-expansion-panel-content>
                 <template v-slot:header>
@@ -313,6 +315,40 @@
                   </v-card-text>
                 </v-card>
               </v-expansion-panel-content>
+
+              <!--Photos panel-->
+              <v-expansion-panel-content>
+                <template v-slot:header>
+                  <div>
+                    <i>Photos</i>
+                  </div>
+                </template>
+                <v-container grid-list-md fluid>
+                  <v-layout row wrap>
+                    <span v-if="!selectedVenue.photos[0]">No Photos</span>
+                    <v-flex md12 v-else v-for="photo in selectedVenue.photos">
+                      <v-card flat tile>
+                        <v-img
+                          :src="'http://localhost:4941/api/v1/venues/'+ selectedVenue.venueId + '/photos/' + photo.photoFilename">
+                          <v-layout column fill-height>
+                            <v-card-title>
+                              <v-spacer></v-spacer>
+                              <v-menu>
+                                <template v-slot:activator="{ on }">
+                                  <v-btn small color="grey" icon v-on="on">
+                                    <v-icon dark small>more_vert</v-icon>
+                                  </v-btn>
+                                </template>
+                              </v-menu>
+                            </v-card-title>
+                          </v-layout>
+                        </v-img>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-expansion-panel-content>
+
             </v-expansion-panel>
           </v-layout>
 

@@ -34,9 +34,7 @@
             <v-card-title primary-title>
               <div class="column">
                 <div class="headline">
-                  <!--<router-link :to="{name: 'venue', params: {venueId: venue.venueId}}">-->
                   {{ venue.venueName }}
-                  <!--</router-link>-->
                 </div>
 
                 <div class="subheading">

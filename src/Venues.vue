@@ -89,6 +89,9 @@
 
                 <div class="subheading">
                   {{ getVenueCategoryName(venue.categoryId) }}
+                  <div>
+                    {{ getVenueDistance(venue)}}
+                  </div>
                 </div>
               </div>
             </v-card-title>
@@ -168,7 +171,8 @@
 
             <div class="column">
                 <span class="grey--text">Avg. Rating:
-                  <v-rating v-if="selectedVenue.meanStarRating" dense small v-model=selectedVenue.meanStarRating color="yellow darken-3"
+                  <v-rating v-if="selectedVenue.meanStarRating" dense small v-model=selectedVenue.meanStarRating
+                            color="yellow darken-3"
                             background-color="grey darken-1"
                             empty-icon="$vuetify.icons.ratingFull" half-increments readonly length="5">
                   </v-rating>
@@ -178,7 +182,8 @@
             <!--<v-spacer></v-spacer>-->
             <div class="column">
                 <span class="grey--text">Cost Rating:
-                  <v-rating v-if="selectedVenue.costRating" dense small v-model=selectedVenue.modeCostRating color="red darken-3"
+                  <v-rating v-if="selectedVenue.costRating" dense small v-model=selectedVenue.modeCostRating
+                            color="red darken-3"
                             background-color="grey darken-1" full-icon="$"
                             empty-icon="$" half-increments readonly length="5">
                   </v-rating>
@@ -576,6 +581,15 @@
           .then(function (response) {
             this.selectedVenueReviews = response.data;
           });
+      },
+      getVenueDistance: function (venue) {
+        let dist = venue.distance;
+        if (!dist) return;
+        if (dist < 1) {
+          return "Distance  " + (dist * 100) + " m";
+        } else {
+          return "Distance  " + dist.toFixed(1) + " km";
+        }
       },
       getVenueAdmin: function (adminId) {
         this.$http.get("http://localhost:4941/api/v1/users/" + adminId)

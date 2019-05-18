@@ -144,25 +144,48 @@
                   <v-card-text>
                     <label for="photoUpload"><a class="font-weight-light">Add photo</a></label>
                     <input id="photoUpload" type="file" accept="image/png,image/jpeg" style="display: none" ref="file"
-                           @change="addPhoto(venue.venueId)">
+                           @change="addVenuePhoto(venue.venueId)">
                   </v-card-text>
 
                 </v-card>
-                <v-card v-for="photo in venue.photos">
-                  <v-card-text class="grey lighten-5">
-                    <!--<div class="font-weight-bold">-->
-                    <!--{{ review.reviewAuthor.username}}-->
-                    <!--<p class="grey&#45;&#45;text">-->
-                    <!--{{ review.timePosted.split("T")[0].replace(/-/g, "/")}}-->
-                    <!--</p>-->
-                    <!--</div>-->
+                <v-container grid-list-md fluid>
+                  <v-layout row wrap>
+                    <v-flex md12 v-for="photo in venue.photos">
+                      <v-card flat tile>
+                        <v-img
+                          :src="'http://localhost:4941/api/v1/venues/'+venue.venueId+'/photos/'+photo.photoFilename">
 
-                    <v-layout align-start justify-start>
-                      <v-img
-                        :src="'http://localhost:4941/api/v1/venues/'+venue.venueId+'/photos/'+photo.photoFilename"></v-img>
-                    </v-layout>
-                  </v-card-text>
-                </v-card>
+                          <v-layout column fill-height>
+                            <v-card-title>
+                              <v-spacer></v-spacer>
+                              <v-menu>
+                                <template v-slot:activator="{ on }">
+                                  <v-btn small color="grey" icon v-on="on">
+                                    <v-icon dark small>more_vert</v-icon>
+                                  </v-btn>
+                                </template>
+
+                                <v-list small dense>
+                                  <v-list-tile v-on:click="makePhotoPrimary(venue.venueId, photo)">
+                                    <v-list-tile-title>Set primary
+                                    </v-list-tile-title>
+                                  </v-list-tile>
+
+                                  <v-list-tile v-on:click="deleteVenuePhoto(venue.venueId, photo)">
+                                    <v-list-tile-title>Delete photo</v-list-tile-title>
+                                  </v-list-tile>
+                                </v-list>
+
+                              </v-menu>
+
+                            </v-card-title>
+                          </v-layout>
+
+                        </v-img>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
               </v-expansion-panel-content>
 
 
@@ -311,6 +334,17 @@
       </v-dialog>
     </v-layout>
 
+    <!--Snackbars-->
+    <v-snackbar right top v-model="successSnackbar" color="success">
+      {{message}}
+      <v-btn color="white" flat @click="successSnackbar = false">Close</v-btn>
+    </v-snackbar>
+
+    <v-snackbar right top v-model="errorSnackbar" color="error">
+      {{message}}
+      <v-btn color="white" flat @click="errorSnackbar = false">Close</v-btn>
+    </v-snackbar>
+
     <!--Pagination-->
     <v-layout justify-center row class="text-xs-center">
       <div class="text-xs-center">
@@ -359,7 +393,10 @@
         pageIndex: "",
         rules: {
           required: value => !!value || 'Required.'
-        }
+        },
+        message: "",
+        successSnackbar: false,
+        errorSnackbar: false,
       }
     },
     created: function () {
@@ -473,10 +510,8 @@
           return false;
         }
       },
-      addPhoto: function (venueId) {
+      addVenuePhoto: function (venueId) {
         this.photoFile = document.querySelector('input[type=file]').files[0];
-        // console.log(this.photoFile);
-        // return;
         if (!this.photoFile) return;
         if ((this.photoFile.size / (1024 * 1024)) > this.MAX_PHOTO_SIZE) {
           this.message = "Photo size must be less than 20MB";
@@ -484,69 +519,98 @@
           this.successSnackbar = false;
           return;
         }
-        console.log(venueId);
-        console.log(this.photoFile)
         let formData = new FormData();
         formData.append("photo", this.photoFile);
         formData.append("description", "");
         formData.append("makePrimary", false);
         this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/photos",
-          JSON.stringify({
-            // "form-data": formData
-            photo: this.photoFile,
-            description: "a new image",
-            makePrimary: false
-          }),
+          formData,
           {
             headers: {
-              // "Content-Type": "application/x-www-form-urlencoded",
+              "Content-Type": "multipart/form-data",
               "X-Authorization": this.$cookie.get("authToken")
             }
           }
-      ).then(function (response) {
-        // console.log(response)
-        this.message = "Photo added!";
-        this.successSnackbar = true;
-        this.errorSnackbar = false;
-        this.setNewPhoto();
-      }, function (error) {
-        this.message = "Could not add photo";
-        this.successSnackbar = false;
-        this.errorSnackbar = true;
-      })
-    },
-    editVenue: function () {
-      if (this.checkForm()) {
-        //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
-        //     JSON.stringify({
-        //       "venueName": this.venue.name,
-        //       "categoryId": this.categories.indexOf(this.venue.category),
-        //       "city": this.venue.city,
-        //       "address": this.venue.address,
-        //       "shortDescription": this.venue.shortDescription,
-        //       "longDescription": this.venue.longDescription,
-        //       "latitude": this.venue.latitude,
-        //       "longitude": this.venue.longitude
-        //     }), {
-        //       headers: {
-        //         "Content-type": "application/json",
-        //         "X-Authorization": this.$cookie.get("authToken")
-        //       }
-        //     }).then(function (response) {
-        //     this.edit = !this.edit;
-        //   }, function (error) {
-        //     this.error = error;
-        //     this.errorFlag = true;
-        //   });
-      } else {
-        console.log("INVALID")
+        ).then(function (response) {
+          this.message = "Photo added!";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+        }, function (error) {
+          this.message = "Could not add photo";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        }).then(function (resolve) {
+          this.getVenues();
+        });
+      },
+      makePhotoPrimary: function (venueId, photo) {
+        const name = photo.photoFilename;
+        console.log(this.$cookie.get("authToken"))
+        this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/photos/" + name + "/setPrimary", {}, {
+          headers: {
+            "X-Authorization": this.$cookie.get("authToken")
+          }
+        }).then(function (response) {
+          this.message = "Photo set primary";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+        }, function (error) {
+          this.message = "Could not make photo primary";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        }).then(function (resolve) {
+          this.getVenues();
+        });
+      },
+      deleteVenuePhoto: function (venueId, photo) {
+        const name = photo.photoFilename;
+        this.$http.delete("http://localhost:4941/api/v1/venues/" + venueId + "/photos/" + name, {
+          headers: {
+            "X-Authorization": this.$cookie.get("authToken")
+          }
+        }).then(function (response) {
+          this.message = "Photo deleted";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+          this.getVenues();
+        }, function (error) {
+          this.message = "Could not delete photo";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        });
+      },
+      editVenue: function () {
+        if (this.checkForm()) {
+          //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
+          //     JSON.stringify({
+          //       "venueName": this.venue.name,
+          //       "categoryId": this.categories.indexOf(this.venue.category),
+          //       "city": this.venue.city,
+          //       "address": this.venue.address,
+          //       "shortDescription": this.venue.shortDescription,
+          //       "longDescription": this.venue.longDescription,
+          //       "latitude": this.venue.latitude,
+          //       "longitude": this.venue.longitude
+          //     }), {
+          //       headers: {
+          //         "Content-type": "application/json",
+          //         "X-Authorization": this.$cookie.get("authToken")
+          //       }
+          //     }).then(function (response) {
+          //     this.edit = !this.edit;
+          //   }, function (error) {
+          //     this.error = error;
+          //     this.errorFlag = true;
+          //   });
+        } else {
+          console.log("INVALID")
+        }
       }
     }
-  }
-  ,
-  components: {
-    Menu
-  }
+    ,
+    components: {
+      Menu
+    }
   }
 </script>
 

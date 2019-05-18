@@ -397,6 +397,7 @@
         message: "",
         successSnackbar: false,
         errorSnackbar: false,
+        MAX_PHOTO_SIZE: 20,
       }
     },
     created: function () {

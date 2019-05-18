@@ -47,19 +47,21 @@
             <v-card-title>
               <div class="column">
                 <span class="grey--text">Avg. Rating:
-                  <v-rating dense small v-model=venue.meanStarRating color="yellow darken-3" half-increments readonly
-                            background-color="grey darken-1" empty-icon="$vuetify.icons.ratingFull" length="5">
+                  <v-rating dense small v-if="venue.meanStarRating" v-model=venue.meanStarRating color="yellow darken-3"
+                            half-increments readonly background-color="grey darken-1"
+                            empty-icon="$vuetify.icons.ratingFull" length="5">
                   </v-rating>
+                  <p v-else>No Rating</p>
                 </span>
               </div>
-
               <v-spacer></v-spacer>
-
               <div class="column">
                 <span class="grey--text">Cost Rating:
-                  <v-rating dense small v-model=venue.modeCostRating color="red darken-3" full-icon="$" empty-icon="$"
-                            background-color="grey darken-1" half-increments readonly length="5">
+                  <v-rating dense small v-if="venue.modeCostRating" v-model=venue.modeCostRating color="red darken-3"
+                            full-icon="$" empty-icon="$" background-color="grey darken-1" half-increments readonly
+                            length="5">
                   </v-rating>
+                  <p v-else>No Rating</p>
                 </span>
               </div>
             </v-card-title>

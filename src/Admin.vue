@@ -4,9 +4,11 @@
 
     <!--View-->
     <v-container fluid grid-list-lg id="venues">
+      <h1 class="text-xs-center">Your Venues</h1>
 
       <!--Add venue button-->
       <v-layout align-end justify-end>
+
         <v-tooltip bottom nudge-right>
           <template v-slot:activator="{ on }">
             <v-btn fab color="success" v-on:click="create = !create" v-on="on">

@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-app>
     <Menu/>
 
@@ -8,7 +8,6 @@
 
       <!--Add venue button-->
       <v-layout align-end justify-end>
-
         <v-tooltip bottom nudge-right>
           <template v-slot:activator="{ on }">
             <v-btn fab color="success" v-on:click="create = !create" v-on="on">
@@ -23,14 +22,17 @@
         <v-flex md4 v-for="(venue, index) in pagedVenues" :key="index">
           <v-card>
 
+            <!--Edit a venue-->
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn icon>
-                <v-icon v-on:click="edit = !edit; venue.id=venue.venueId">edit</v-icon>
+              <v-btn icon v-on:click="editVenueValues.id = venue.venueId">
+                <v-icon v-on:click="edit = !edit">edit</v-icon>
               </v-btn>
             </v-card-actions>
+
             <v-img :src="getVenuePrimaryPhoto(venue.venueId, venue.primaryPhoto)" contain height="150px"></v-img>
-            <!--Venue Name with link-->
+
+            <!--Venue Name & Category-->
             <v-card-title primary-title>
               <div class="column">
                 <div class="headline">
@@ -214,7 +216,6 @@
                 </v-container>
               </v-expansion-panel-content>
 
-
             </v-expansion-panel>
 
           </v-card>
@@ -232,20 +233,16 @@
               <h3 class="font-weight-regular">Swoosh <br> <h4>Add your venue!</h4></h3>
               <br><br>
             </div>
-            <div v-if="this.errorFlag" class="red--text">
-              <v-icon color="red">error</v-icon>
-              {{this.error}}
-            </div>
             <v-form v-model="valid">
               <!--Name & Category-->
               <v-flex>
-                <v-text-field v-model="venue.name" name="name" :rules="[rules.required]" label="Name"
+                <v-text-field v-model="editVenueValues.venueName" name="name" :rules="[rules.required]" label="Name"
                               type="text">
                 </v-text-field>
               </v-flex>
               <v-flex>
                 <v-autocomplete
-                  v-model="venue.category"
+                  v-model="editVenueValues.category"
                   :items=categories
                   label="Category"
                   attach=""
@@ -256,35 +253,36 @@
 
               <!--City & Address-->
               <v-flex>
-                <v-text-field v-model="venue.city" name="city" :rules="[rules.required]" label="City" type="text">
+                <v-text-field v-model="editVenueValues.city" name="city" :rules="[rules.required]" label="City"
+                              type="text">
                 </v-text-field>
               </v-flex>
               <v-flex>
-                <v-text-field v-model="venue.address" name="address" :rules="[rules.required]" label="Address"
+                <v-text-field v-model="editVenueValues.address" name="address" :rules="[rules.required]" label="Address"
                               type="text">
                 </v-text-field>
               </v-flex>
 
               <!--Short & Long description-->
               <v-flex>
-                <v-text-field v-model="venue.shortDescription" name="shortDescription"
+                <v-text-field v-model="editVenueValues.shortDescription" name="shortDescription"
                               :rules="[rules.required]"
                               label="Short Description" id="shortDescription" type="text"></v-text-field>
               </v-flex>
               <v-flex>
-                <v-text-field v-model="venue.longDescription" name="longDescription" :rules="[rules.required]"
+                <v-text-field v-model="editVenueValues.longDescription" name="longDescription" :rules="[rules.required]"
                               label="Long Description" id="longDescription" type="text">
                 </v-text-field>
               </v-flex>
 
               <!--Latitude & Longitude-->
               <v-flex>
-                <v-text-field v-model="venue.latitude" name="latitude" :rules="[rules.required]"
+                <v-text-field v-model="editVenueValues.latitude" name="latitude" :rules="[rules.required]"
                               label="Latitude" id="latitude" type="number">
                 </v-text-field>
               </v-flex>
               <v-flex>
-                <v-text-field v-model="venue.longitude" name="longitude" :rules="[rules.required]"
+                <v-text-field v-model="editVenueValues.longitude" name="longitude" :rules="[rules.required]"
                               label="Longitude" id="longitude" type="number">
                 </v-text-field>
               </v-flex>
@@ -292,7 +290,7 @@
 
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" :disabled="!valid" v-on:click="create = !create">Cancel</v-btn>
+            <v-btn color="primary" v-on:click="create = !create">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" :disabled="!valid" v-on:click="createVenue">Create</v-btn>
           </v-card-actions>
@@ -310,39 +308,40 @@
               <h3 class="font-weight-regular">Swoosh<br> <h4>Edit your venue</h4></h3>
               <br><br>
             </div>
-            <div v-if="this.errorFlag" class="red--text">
-              <v-icon color="red">error</v-icon>
-              {{this.error}}
-            </div>
             <v-form v-model="valid">
               <!--Name & Category-->
               <v-flex>
-                <v-text-field v-model="venue.name" name="name" label="Name"
+                <v-text-field v-model="editVenueValues.venueName" name="name" label="Name"
                               type="text">
                 </v-text-field>
               </v-flex>
               <v-flex>
-                <v-autocomplete v-model="venue.category" :items=categories label="Category" attach=""></v-autocomplete>
+                <v-autocomplete v-model="editVenueValues.category" :items=categories label="Category"
+                                attach=""></v-autocomplete>
               </v-flex>
 
               <!--Short & Long description-->
               <v-flex>
-                <v-text-field v-model="venue.shortDescription" name="shortDescription" label="Short Description"
+                <v-text-field v-model="editVenueValues.shortDescription" name="shortDescription"
+                              label="Short Description"
                               id="shortDescription" type="text"></v-text-field>
               </v-flex>
               <v-flex>
-                <v-textarea v-model="venue.longDescription" name="longDescription" rows="1" label="Long Description"
+                <v-textarea v-model="editVenueValues.longDescription" name="longDescription" rows="1"
+                            label="Long Description"
                             id="longDescription" type="text">
                 </v-textarea>
               </v-flex>
 
               <!--Latitude & Longitude-->
               <v-flex>
-                <v-text-field v-model="venue.latitude" name="latitude" label="Latitude" id="latitude" type="number">
+                <v-text-field v-model="editVenueValues.latitude" name="latitude" label="Latitude" id="latitude"
+                              type="number">
                 </v-text-field>
               </v-flex>
               <v-flex>
-                <v-text-field v-model="venue.longitude" name="longitude" label="Longitude" id="longitude" type="number">
+                <v-text-field v-model="editVenueValues.longitude" name="longitude" label="Longitude" id="longitude"
+                              type="number">
                 </v-text-field>
               </v-flex>
             </v-form>
@@ -351,7 +350,7 @@
 
           <!--Cancel & Edit buttons-->
           <v-card-actions>
-            <v-btn color="primary" :disabled="!valid" v-on:click="edit = !edit">Cancel</v-btn>
+            <v-btn color="primary" v-on:click="edit = !edit">Cancel</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" v-on:click="editVenue">Edit</v-btn>
           </v-card-actions>
@@ -365,7 +364,6 @@
       {{message}}
       <v-btn color="white" flat @click="successSnackbar = false">Close</v-btn>
     </v-snackbar>
-
     <v-snackbar right top v-model="errorSnackbar" color="error">
       {{message}}
       <v-btn color="white" flat @click="errorSnackbar = false">Close</v-btn>
@@ -395,15 +393,13 @@
     data() {
       return {
         currentUser: null,
-        error: "",
-        errorFlag: false,
         categories: [],
         valid: true,
         create: false,
         edit: false,
-        venue: [
+        editVenueValues: [
           {id: null},
-          {name: ""},
+          {venueName: ""},
           {category: ""},
           {city: ""},
           {shortDescription: ""},
@@ -452,8 +448,9 @@
             this.getVenueAddresses();
             this.getVenuePhotos();
           }, function (error) {
-            this.error = error;
-            this.errorFlag = true;
+            this.message = "Error getting venues";
+            this.successSnackbar = false;
+            this.errorSnackbar = true;
           });
       },
       getVenueAddresses: function () {
@@ -517,14 +514,14 @@
       createVenue: function () {
         this.$http.post("http://localhost:4941/api/v1/venues",
           JSON.stringify({
-            "venueName": this.venue.name,
-            "categoryId": this.categories.indexOf(this.venue.category),
-            "city": this.venue.city,
-            "address": this.venue.address,
-            "shortDescription": this.venue.shortDescription,
-            "longDescription": this.venue.longDescription,
-            "latitude": parseFloat(this.venue.latitude),
-            "longitude": parseFloat(this.venue.longitude)
+            "venueName": this.editVenueValues.venueName,
+            "categoryId": this.categories.indexOf(this.editVenueValues.category),
+            "city": this.editVenueValues.city,
+            "address": this.editVenueValues.address,
+            "shortDescription": this.editVenueValues.shortDescription,
+            "longDescription": this.editVenueValues.longDescription,
+            "latitude": parseFloat(this.editVenueValues.latitude),
+            "longitude": parseFloat(this.editVenueValues.longitude)
           }), {
             headers: {
               "Content-type": "application/json",
@@ -534,18 +531,21 @@
           this.create = !this.create;
           this.getVenues();
         }, function (error) {
-          this.error = error;
-          this.errorFlag = true;
+          this.message = "Failed to create";
+          this.errorSnackbar = true;
+          this.successSnackbar = false;
         });
       },
       checkForm: function () {
-        if (this.venue.name || this.venue.category || this.venue.city || this.venue.shortDescription
-          || this.venue.longDescription || this.venue.address || this.venue.latitude || this.venue.longitude) {
-          return true;
-        } else {
-          this.valid = false;
-          return false;
+        let query = {};
+        for (let item in this.editVenueValues) {
+          if (this.editVenueValues.hasOwnProperty(item)) {
+            query[item] = this.editVenueValues[item];
+          }
         }
+
+
+        return query;
       },
       addVenuePhoto: function (venueId) {
         this.photoFile = document.querySelector('input[type=file]').files[0];
@@ -617,28 +617,24 @@
         });
       },
       editVenue: function () {
-        if (this.checkForm()) {
-          //   this.$http.patch("http://localhost:4941/api/v1/venues" + this.venue.venueId,
-          //     JSON.stringify({
-          //       "venueName": this.venue.name,
-          //       "categoryId": this.categories.indexOf(this.venue.category),
-          //       "city": this.venue.city,
-          //       "address": this.venue.address,
-          //       "shortDescription": this.venue.shortDescription,
-          //       "longDescription": this.venue.longDescription,
-          //       "latitude": this.venue.latitude,
-          //       "longitude": this.venue.longitude
-          //     }), {
-          //       headers: {
-          //         "Content-type": "application/json",
-          //         "X-Authorization": this.$cookie.get("authToken")
-          //       }
-          //     }).then(function (response) {
-          //     this.edit = !this.edit;
-          //   }, function (error) {
-          //     this.error = error;
-          //     this.errorFlag = true;
-          //   });
+        let query = this.checkForm();
+        if (query) {
+          this.$http.patch("http://localhost:4941/api/v1/venues/" + this.editVenueValues.id, query,
+            {
+              headers: {
+                "Content-type": "application/json",
+                "X-Authorization": this.$cookie.get("authToken")
+              }
+            }).then(function (response) {
+            this.edit = !this.edit;
+            this.message = "Edit saved!";
+            this.successSnackbar = true;
+            this.errorSnackbar = false;
+          }, function (error) {
+            this.message = "Edit failed";
+            this.errorSnackbar = true;
+            this.successSnackbar = false;
+          });
         } else {
           console.log("INVALID")
         }

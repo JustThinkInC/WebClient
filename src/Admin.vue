@@ -366,11 +366,15 @@
     <!--Snackbars-->
     <v-snackbar right top v-model="successSnackbar" color="success">
       {{message}}
-      <v-btn color="white" icon flat @click="successSnackbar = false"><v-icon>close</v-icon></v-btn>
+      <v-btn color="white" icon flat @click="successSnackbar = false">
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-snackbar>
     <v-snackbar right top v-model="errorSnackbar" color="error">
       {{message}}
-      <v-btn color="white" flat icon @click="errorSnackbar = false"><v-icon>close</v-icon></v-btn>
+      <v-btn color="white" flat icon @click="errorSnackbar = false">
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-snackbar>
 
     <!--Pagination-->
@@ -465,9 +469,6 @@
             .then(function (response) {
               this.venues[i]["address"] = response.data.address;
             })
-            .then(function (resolve) {
-              this.paginate(this.perPage, 0);
-            });
         }
       },
       getVenuePhotos: function () {
@@ -475,7 +476,9 @@
           this.$http.get("http://localhost:4941/api/v1/venues/" + this.venues[i].venueId)
             .then(function (response) {
               this.venues[i]["photos"] = response.data.photos;
-            });
+            }) .then(function (resolve) {
+            this.paginate(this.perPage, 0);
+          });
         }
       },
       getCategories: function () {
@@ -521,7 +524,7 @@
         this.$http.post("http://localhost:4941/api/v1/venues",
           JSON.stringify({
             "venueName": this.editVenueValues.venueName,
-            "categoryId": this.categories.indexOf(this.editVenueValues.category)+1,
+            "categoryId": this.categories.indexOf(this.editVenueValues.category) + 1,
             "city": this.editVenueValues.city,
             "address": this.editVenueValues.address,
             "shortDescription": this.editVenueValues.shortDescription,

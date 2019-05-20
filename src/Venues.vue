@@ -632,7 +632,7 @@
 
         this.$http.get("http://localhost:4941/api/v1/users/" + adminId + "/photo")
           .then(function (response) {
-            this.selectedVenue.admin['photo'] = response.data;
+            this.selectedVenue.admin['photo'] = "http://localhost:4941/api/v1/users/" + adminId + "/photo";
           }, function (error) {
             this.selectedVenue.admin['photo'] = "src/assets/defaultProfile.png";
           })

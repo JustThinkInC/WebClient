@@ -308,6 +308,10 @@
               <h3 class="font-weight-regular">Swoosh<br> <h4>Edit your venue</h4></h3>
               <br><br>
             </div>
+            <div v-if="this.errorFlag" class="red--text">
+              <v-icon color="red">error</v-icon>
+              {{this.error}}
+            </div>
             <v-form v-model="valid">
               <!--Name & Category-->
               <v-flex>
@@ -395,6 +399,8 @@
         currentUser: null,
         categories: [],
         valid: true,
+        error: "",
+        errorFlag: false,
         create: false,
         edit: false,
         editVenueValues: [
@@ -582,7 +588,6 @@
       },
       makePhotoPrimary: function (venueId, photo) {
         const name = photo.photoFilename;
-        console.log(this.$cookie.get("authToken"))
         this.$http.post("http://localhost:4941/api/v1/venues/" + venueId + "/photos/" + name + "/setPrimary", {}, {
           headers: {
             "X-Authorization": this.$cookie.get("authToken")
@@ -618,7 +623,7 @@
       },
       editVenue: function () {
         let query = this.checkForm();
-        if (query) {
+        if (query.length >= 1) {
           this.$http.patch("http://localhost:4941/api/v1/venues/" + this.editVenueValues.id, query,
             {
               headers: {
@@ -636,7 +641,8 @@
             this.successSnackbar = false;
           });
         } else {
-          console.log("INVALID")
+          this.error = "Please fill in the form";
+          this.errorFlag = true;
         }
       }
     }

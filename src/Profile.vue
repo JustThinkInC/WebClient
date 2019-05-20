@@ -23,7 +23,7 @@
 
                   <v-list>
                     <v-list-tile v-on:click="addPhoto()">
-                      <input type="file" ref="file" style="display: none" @change="addPhoto">
+                      <input type="file" ref="file" accept="image/png,image/jpeg" style="display: none" @change="addPhoto">
 
                       <v-list-tile-title hover v-on:click="$refs.file.click()">Set profile photo
                       </v-list-tile-title>

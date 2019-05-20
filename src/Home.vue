@@ -8,7 +8,7 @@
           <v-layout mt-5 fill-height justify-center>
             <span class="text-md-center">
               <h1><i>Swoosh</i></h1>
-              <h2><i>Your venue manager</i></h2>
+              <h2><i>Your Venue Manager</i></h2>
             </span>
           </v-layout>
         </v-sheet>

@@ -5,13 +5,12 @@
       <v-toolbar-title>Swoosh</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat>Link One</v-btn>
-        <v-btn flat>Link Two</v-btn>
-        <v-btn flat>Link Three</v-btn>
+        <v-btn flat to="/">Home</v-btn>
+        <v-btn flat to="/venues">Venues</v-btn>
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-navigation-drawer id="drawer" hide-overlay v-model="drawer" temporary clipped app>
+    <v-navigation-drawer id="drawer" hide-overlay v-model="drawer" temporary app>
       <v-list>
         <v-list-tile avatar>
           <v-list-tile-avatar>

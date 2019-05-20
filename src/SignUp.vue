@@ -129,7 +129,6 @@
               "Content-type": "application/json",
             }
           }).then(function (response) {
-          console.log(response);
           this.autoLogin();
         }, (function (error) {
           this.error = error.statusText.split(":")[1];

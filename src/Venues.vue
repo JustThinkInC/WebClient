@@ -134,7 +134,6 @@
     <v-layout fluid align-center fill-height justify-space-around row>
       <v-dialog v-model="showVenue" id="venueModal" aria-labelledby="venueModal" aria-hidden="true" width="50%">
         <v-card flat v-if="selectedVenue">
-          <!--TODO Add all Venues images, emphasises primary...maybe use carousel-->
           <v-img :src="getVenuePrimaryPhoto(selectedVenue.venueId, selectedVenue.primaryPhoto)" contain height="150px">
           </v-img>
 
@@ -149,7 +148,6 @@
                 {{ selectedVenue.category.categoryName }}
               </div>
 
-              <!--TODO: Add an information menu here, maybe use an accordion menu component-->
               <v-list-tile-content>
                 <p>
                   <br>

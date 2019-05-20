@@ -172,12 +172,16 @@
 
     <v-snackbar right top v-model="successSnackbar" color="success">
       {{message}}
-      <v-btn color="white" flat icon @click="successSnackbar = false"><v-icon>close</v-icon></v-btn>
+      <v-btn color="white" flat icon @click="successSnackbar = false">
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-snackbar>
 
     <v-snackbar right top v-model="errorSnackbar" color="error">
       {{message}}
-      <v-btn color="white" flat icon @click="errorSnackbar = false"><v-icon>close</v-icon></v-btn>
+      <v-btn color="white" flat icon @click="errorSnackbar = false">
+        <v-icon>close</v-icon>
+      </v-btn>
     </v-snackbar>
 
   </v-app>
@@ -290,10 +294,12 @@
           }), {headers: {"Content-type": "application/json"}}).then(function (response) {
           this.$cookie.set("authToken", response.data.token);
           this.changePassword();
-        }), function (error) {
+          this.errorPasswordFlag = false;
+          this.errorPassword = "";
+        }, function (error) {
           this.errorPasswordFlag = true;
           this.errorPassword = "Password is incorrect";
-        };
+        });
 
       },
       changePassword: function () {
@@ -318,25 +324,20 @@
       },
       editProfile: function () {
         let query = {};
-        for (let i = 0; i < this.editProfileValues.length; i++) {
-          if (this.editProfileValues[i]) {
-            query.push()
-          }
+        if (this.editProfileValues["givenName"]) {
+          query["givenName"] = this.editProfileValues["givenName"];
+        }
+        if (this.editProfileValues["familyName"]) {
+          query["familyName"] = this.editProfileValues["familyName"];
         }
 
-        // for (let key in this.editProfileValues) {
-        //   if (this.editProfileValues.hasOwnProperty(key)) {
-        //     query[key] = this.editProfileValues[key];
-        //   }
-        // }
-
-        if (Object.entries(query).length === 0) {
+        if (Object.entries(query).length < 1) {
           this.errorFlag = true;
           this.error = "Please fill in the form";
           return;
         }
-
-        return;
+        this.errorFlag = false;
+        this.error = "";
 
         this.$http.patch("http://localhost:4941/api/v1/users/" + this.currentUser.userId, query,
           {

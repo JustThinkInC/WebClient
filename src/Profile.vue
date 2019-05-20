@@ -172,12 +172,12 @@
 
     <v-snackbar right top v-model="successSnackbar" color="success">
       {{message}}
-      <v-btn color="white" flat @click="successSnackbar = false">Close</v-btn>
+      <v-btn color="white" flat icon @click="successSnackbar = false"><v-icon>close</v-icon></v-btn>
     </v-snackbar>
 
     <v-snackbar right top v-model="errorSnackbar" color="error">
       {{message}}
-      <v-btn color="white" flat @click="errorSnackbar = false">Close</v-btn>
+      <v-btn color="white" flat icon @click="errorSnackbar = false"><v-icon>close</v-icon></v-btn>
     </v-snackbar>
 
   </v-app>

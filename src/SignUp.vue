@@ -99,7 +99,7 @@
           emailRule: value => (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
             .test(value) || 'Invalid Email Address',
           max: value => value.length <= 64 || 'Max 64 characters',
-          min: value => value.length >= 6 || 'Min 6 characters',
+          min: value => value.length >= 1 || 'Min 1 characters',
           passwordMatch: () => this.password === this.passConfirm || ('The password you entered doesn\'t match')
         }
       }

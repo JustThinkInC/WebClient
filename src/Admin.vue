@@ -521,7 +521,7 @@
         this.$http.post("http://localhost:4941/api/v1/venues",
           JSON.stringify({
             "venueName": this.editVenueValues.venueName,
-            "categoryId": this.categories.indexOf(this.editVenueValues.category),
+            "categoryId": this.categories.indexOf(this.editVenueValues.category)+1,
             "city": this.editVenueValues.city,
             "address": this.editVenueValues.address,
             "shortDescription": this.editVenueValues.shortDescription,
@@ -536,6 +536,11 @@
           }).then(function (response) {
           this.create = !this.create;
           this.getVenues();
+          this.message = "Venue created";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+          this.editVenueValues = [{id: null}, {venueName: ""}, {category: ""}, {city: ""}, {shortDescription: ""},
+            {longDescription: ""}, {address: ""}, {latitude: null}, {longitude: null}];
         }, function (error) {
           this.message = "Failed to create";
           this.errorSnackbar = true;
@@ -544,10 +549,29 @@
       },
       checkForm: function () {
         let query = {};
-        for (let item in this.editVenueValues) {
-          if (this.editVenueValues.hasOwnProperty(item)) {
-            query[item] = this.editVenueValues[item];
-          }
+        if (this.editVenueValues["venueName"]) {
+          query["venueName"] = this.editVenueValues["venueName"];
+        }
+        if (this.editVenueValues["category"]) {
+          query["category"] = this.editVenueValues["category"];
+        }
+        if (this.editVenueValues["city"]) {
+          query["city"] = this.editVenueValues["city"];
+        }
+        if (this.editVenueValues["shortDescription"]) {
+          query["shortDescription"] = this.editVenueValues["shortDescription"];
+        }
+        if (this.editVenueValues["longDescription"]) {
+          query["longDescription"] = this.editVenueValues["longDescription"];
+        }
+        if (this.editVenueValues["address"]) {
+          query["address"] = this.editVenueValues["address"];
+        }
+        if (this.editVenueValues["latitude"]) {
+          query["latitude"] = this.editVenueValues["latitude"];
+        }
+        if (this.editVenueValues["longitude"]) {
+          query["longitude"] = this.editVenueValues["longitude"];
         }
 
 
@@ -623,7 +647,7 @@
       },
       editVenue: function () {
         let query = this.checkForm();
-        if (query.length >= 1) {
+        if (Object.entries(query).length >= 1) {
           this.$http.patch("http://localhost:4941/api/v1/venues/" + this.editVenueValues.id, query,
             {
               headers: {

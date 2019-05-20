@@ -493,7 +493,7 @@
       },
       getVenuePrimaryPhoto: function (id, filename) {
         if (filename === null) {
-          return 'src/assets/logo.png'
+          return 'src/assets/defaultVenue.jpg'
         }
         return "http://localhost:4941/api/v1/venues/" + id + "/photos/" + filename
       },

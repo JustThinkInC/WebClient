@@ -652,6 +652,7 @@
               }
             }).then(function (response) {
             this.addReview = !this.addReview;
+            this.showVenue = false;
             this.successSnackbar = true;
           })
         }

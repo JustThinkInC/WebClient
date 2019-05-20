@@ -9,7 +9,6 @@
           <v-img :src="getUserPhoto()" height="300px">
             <v-layout column fill-height>
               <v-card-title>
-                <!--TODO open edit form-->
                 <v-spacer></v-spacer>
                 <v-btn icon class="mr-3" v-on:click="edit = !edit">
                   <v-icon>edit</v-icon>
@@ -119,13 +118,7 @@
               </v-flex>
 
               <!--Password change-->
-              <v-flex>
-                <v-text-field v-model="editProfileValues.currentPassword" label="Current Password" type="password">
-                </v-text-field>
-              </v-flex>
-              <v-flex>
-                <v-text-field v-model="editProfileValues.password" label="New Password" type="password"></v-text-field>
-              </v-flex>
+              <v-label v-on:click="editPassword = !editPassword"><a>Change password</a></v-label>
 
             </v-form>
           </v-card-text>
@@ -141,6 +134,41 @@
       </v-dialog>
     </v-layout>
 
+    <!--Edit password-->
+    <v-layout fluid align-center fill-height justify-space-around row>
+      <v-dialog v-model="editPassword" width="50%">
+        <v-card>
+          <v-card-text>
+            <div class="text-xs-center">
+              <h3 class="font-weight-regular">Swoosh<br> <h4>Edit Password</h4></h3>
+              <br><br>
+            </div>
+            <!--Error message for invalid form-->
+            <div v-if="this.errorPasswordFlag" class="red--text">
+              <v-icon color="red">error</v-icon>
+              {{errorPassword}}
+            </div>
+            <v-form v-model="valid">
+              <v-flex>
+                <v-text-field v-model="currentPassword" label="Current Password" type="password">
+                </v-text-field>
+              </v-flex>
+              <v-flex>
+                <v-text-field v-model="password" label="New Password" type="password"></v-text-field>
+              </v-flex>
+            </v-form>
+          </v-card-text>
+
+          <!--Cancel & Edit buttons-->
+          <v-card-actions>
+            <v-btn color="primary" v-on:click="editPassword = !editPassword">Cancel</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" v-on:click="checkPassword">Edit</v-btn>
+          </v-card-actions>
+
+        </v-card>
+      </v-dialog>
+    </v-layout>
 
     <v-snackbar right top v-model="successSnackbar" color="success">
       {{message}}
@@ -164,18 +192,21 @@
       return {
         currentUser: JSON.parse(this.$cookie.get("currentUser")),
         editProfileValues: [
-          {currentPassword: ""},
-          {password: ""},
           {givenName: ""},
           {familyName: ""},
         ],
+        currentPassword: "",
+        password: "",
+        editPassword: false,
         valid: false,
         edit: false,
         uploadPhoto: false,
         successSnackbar: false,
         errorSnackbar: false,
-        errorFlag: false,
         error: "",
+        errorFlag: "",
+        errorPasswordFlag: false,
+        errorPassword: "",
         filename: "",
         message: "",
         MAX_PHOTO_SIZE: 20
@@ -241,61 +272,89 @@
         return this.currentUser.photo;
       },
       checkPassword: function () {
-        if (!this.editProfileValues.currentPassword && !this.editProfileValues.password) {
-          return true;
-        } else if (!this.editProfileValues.currentPassword && this.editProfileValues.password) {
-          this.error = "Please enter your current password to set a new one";
-          this.errorFlag = true;
-          return false;
-        } else if (!this.editProfileValues.password) {
-          this.error = "Please enter a new password";
-          this.errorFlag = true;
-          return false;
+        if (!this.currentPassword) {
+          this.errorPassword = "Please enter your current password to set a new one";
+          this.errorPasswordFlag = true;
+          return;
+        } else if (!this.password) {
+          this.errorPassword = "Please enter a new password";
+          this.errorPasswordFlag = true;
+          return;
         }
 
 
-        return this.$http.post("http://localhost:4941/api/v1/users/login",
+        this.$http.post("http://localhost:4941/api/v1/users/login",
           JSON.stringify({
             "username": this.currentUser.username,
-            "password": this.editProfileValues.currentPassword,
-          }), {headers: {"Content-type": "application/json"}})
+            "password": this.currentPassword,
+          }), {headers: {"Content-type": "application/json"}}).then(function (response) {
+          this.$cookie.set("authToken", response.data.token);
+          this.changePassword();
+        }), function (error) {
+          this.errorPasswordFlag = true;
+          this.errorPassword = "Password is incorrect";
+        };
+
+      },
+      changePassword: function () {
+        this.$http.patch("http://localhost:4941/api/v1/users/" + this.currentUser.userId,
+          {"password": this.password}, {
+            headers: {
+              "Content-type": "application/json",
+              "X-Authorization": this.$cookie.get("authToken")
+            }
+          }).then(function (response) {
+          this.message = "Password updated";
+          this.password = "";
+          this.currentPassword = "";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+          this.editPassword = false;
+        }, function (error) {
+          this.message = "Failed to update password";
+          this.successSnackbar = false;
+          this.errorSnackbar = true;
+        })
       },
       editProfile: function () {
-        this.checkPassword()
-          .then(function (response) {
-              this.$cookie.set("authToken", response.data.token);
+        let query = {};
+        for (let i = 0; i < this.editProfileValues.length; i++) {
+          if (this.editProfileValues[i]) {
+            query.push()
+          }
+        }
 
-              let query = {};
-              for (let key in this.editProfileValues) {
-                if (this.editProfileValues.hasOwnProperty(key)) {
-                  query[key] = this.editProfileValues[key];
-                }
-              }
+        // for (let key in this.editProfileValues) {
+        //   if (this.editProfileValues.hasOwnProperty(key)) {
+        //     query[key] = this.editProfileValues[key];
+        //   }
+        // }
 
-              if (query) {
-                this.$http.patch("http://localhost:4941/api/v1/users/" + this.currentUser.userId, query,
-                  {
-                    headers: {
-                      "Content-type": "application/json",
-                      "X-Authorization": this.$cookie.get("authToken")
-                    }
-                  }).then(function (response) {
-                  this.updateCookie();
-                  this.edit = !this.edit;
-                  this.message = "Edit saved!";
-                  this.successSnackbar = true;
-                  this.errorSnackbar = false;
-                }, function (error) {
-                  this.message = "Edit failed";
-                  this.errorSnackbar = true;
-                  this.successSnackbar = false;
-                });
-              }
-            },
-            function (error) {
-              this.error = "Password is incorrect";
-              this.errorFlag = true;
-            });
+        if (Object.entries(query).length === 0) {
+          this.errorFlag = true;
+          this.error = "Please fill in the form";
+          return;
+        }
+
+        return;
+
+        this.$http.patch("http://localhost:4941/api/v1/users/" + this.currentUser.userId, query,
+          {
+            headers: {
+              "Content-type": "application/json",
+              "X-Authorization": this.$cookie.get("authToken")
+            }
+          }).then(function (response) {
+          this.updateCookie();
+          this.edit = !this.edit;
+          this.message = "Edit saved!";
+          this.successSnackbar = true;
+          this.errorSnackbar = false;
+        }, function (error) {
+          this.message = "Edit failed";
+          this.errorSnackbar = true;
+          this.successSnackbar = false;
+        });
       },
       updateCookie: function () {
         this.$http.get("http://localhost:4941/api/v1/users/" + this.currentUser.userId)

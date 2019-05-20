@@ -2,17 +2,18 @@
   <v-app>
     <Menu/>
 
-    <v-container align-center mt-5 justify-center>
-      <v-layout align-center justify-center column>
-        <h1>Swoosh</h1>
-        <h2>Your venue manager</h2>
-        <v-carousel>
-          <v-carousel-item src="src/assets/defaultProfile.jpg"></v-carousel-item>
-          <v-carousel-item src="src/assets/logo.png"></v-carousel-item>
-          <v-carousel-item src="src/assets/defaultProfile.png"></v-carousel-item>
-        </v-carousel>
-      </v-layout>
-    </v-container>
+    <v-carousel hide-controls hide-delimiters height="100vh">
+      <v-carousel-item v-for="i in 7" :src="'src/assets/'+i+'.jpg'" :key="i">
+        <v-sheet color="transparent" height="100%">
+          <v-layout mt-5 fill-height justify-center>
+            <span class="text-md-center">
+              <h1><i>Swoosh</i></h1>
+              <h2><i>Your venue manager</i></h2>
+            </span>
+          </v-layout>
+        </v-sheet>
+      </v-carousel-item>
+    </v-carousel>
 
   </v-app>
 </template>

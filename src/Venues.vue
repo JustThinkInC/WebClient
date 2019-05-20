@@ -177,7 +177,6 @@
                   <p v-else>No Rating</p>
                 </span>
             </div>
-            <!--<v-spacer></v-spacer>-->
             <div class="column">
                 <span class="grey--text">Cost Rating:
                   <v-rating v-if="selectedVenue.costRating" dense small v-model=selectedVenue.modeCostRating
